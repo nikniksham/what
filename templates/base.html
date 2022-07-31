@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/{% block stylename %}catalog{% endblock %}.css">
+</head>
+<body>
+<header class="header">
+    <a class="logo__link" href="/">
+        <div class="logo">
+            <img class="logo__image" src="/static/img/logo.png" alt="Логотип">
+            <p class="logo__text">Opt4You</p>
+        </div>
+    </a>
+    <div class="search">
+        <div class="search__catalog-button">
+            Каталог
+        </div>
+        <div class="search__search">
+            <input class="search__search-field" placeholder="Искать товары..." type="text">
+            <button class="search__search-button">Поиск</button>
+        </div>
+    </div>
+    <div class="personal">
+        <a class="personal__icon" href="/favourite">
+            <img src="/static/img/header/favourite.svg" alt="Избранное">
+            <span id="favourite">0</span>
+        </a>
+
+        <a class="personal__icon" href="/cart">
+            <img src="/static/img/header/cart.svg" alt="Корзина">
+            <span id="card">0</span>
+        </a>
+
+        <a class="personal__icon" href="/profile">
+            <img src="/static/img/header/profile.svg" alt="Профиль">
+        </a>
+    </div>
+</header>
+
+<main class="main">
+    <div class="navline">Главная / {{ title }}</div>
+    {% block main %}
+    {% endblock %}
+</main>
+
+<footer class="footer">
+    <div class="footer__blocks">
+        <div class="footer__block">
+            <div class="footer__logo">
+                <img class="footer__logo-image" src="/static/img/logo.png" alt="Логотип">
+                <p class="footer__logo-text">Opt4You</p>
+            </div>
+        </div>
+        <div class="footer__block">
+            <a class="footer__link" href="#">О нас</a>
+            <a class="footer__link" href="#">Способы оплаты</a>
+        </div>
+        <div class="footer__block">
+            <a class="footer__link" href="#">Гарантийное обслуживание</a>
+            <a class="footer__link" href="#">Доставка</a>
+        </div>
+        <div class="footer__block">
+            <a class="footer__link" href="#">Возврат</a>
+            <a class="footer__link" href="#">Контакты</a>
+        </div>
+        <div class="footer__block">
+            <p class="footer__copy">© 2022 Opt4You<br>
+Все права защищены.</p>
+        </div>
+    </div>
+    <div class="footer__bottom-menu">
+        <a href="#" class="footer__bottom-link">Пользовательское соглашение</a>
+        <a href="#" class="footer__bottom-link">Политика обработки персональных данных</a>
+    </div>
+</footer>
+</body>
+</html>

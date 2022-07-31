@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Оформить заказ</title>
+</head>
+<body>
+    <a class="logo__link" href="/">
+        <div class="logo">
+            <img class="logo__image" src="/static/img/logo.png" alt="Логотип">
+            <p class="logo__text">Opt4You</p>
+        </div>
+    </a>
+    <form method="post" action="/place_an_order">
+        Данные для доставки <br>
+        <label> ФИО получателя *
+            <input required type="text" name="name">
+        </label><br>
+        <label> Email *
+            <input required type="email" name="email">
+        </label><br>
+        <label> Телефон *
+            <input required type="tel" name="tel">
+        </label><br>
+        <label> Адрес доставки *
+            <input required type="text" name="address">
+        </label><br>
+        <label> Индекс *
+            <input required type="number" name="index">
+        </label><br>
+        Способ оплаты * <br>
+        <label>
+            <input required type="radio" checked="checked" name="payment_method"> Банковская карта
+        </label><br>
+        Комментарий к заказу <br>
+        <label> Примечания к вашему заказу, например, уточнения для доставки.
+            <input type="text" name="comment">
+        </label><br>
+        <label> С условиями Агентского договора согласен *
+            <input required type="checkbox">
+        </label><br>
+        <label> Даю Согласие на обработку персональных данных *
+            <input required type="checkbox">
+        </label><br>
+        <button type="submit">Оформить заказ</button>
+    </form>
+</body>
+</html>
