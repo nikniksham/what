@@ -22,9 +22,13 @@ def get_product_by_id(product_id):
     return data
 
 
-def get_list_products():
+def get_list_products(max_id=None, min_id=None):
     session = db_session.create_session()
-    products = session.query(Product).all()
+    if max_id is None:
+        max_id = 999999999999
+    if min_id is None:
+        min_id = 0
+    products = session.query(Product).filter(Product.id <= max_id).all()
     data = [item.to_dict(only=("name", "link", "max_discount", "bad_count", "bad_price", "good_count", 'good_price',
                                "in_stoke", "image")) for item in products]
     session.close()

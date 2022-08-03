@@ -3,6 +3,7 @@ from flask_login import LoginManager
 from flask import Flask, render_template, redirect, request
 from data import db_session
 from data.person import Person
+from data.Inner.ProductAPI import get_list_products
 import app_logic
 
 app = Flask(__name__)
@@ -27,7 +28,7 @@ def hello_world():  # put app's code here
 
 @app.route('/catalog')
 def catalog():  # put app's code here
-    return render_template('catalog.html', title='Каталог')
+    return render_template('catalog.html', title='Каталог', products=get_list_products(50))
 
 
 @app.route('/order')
