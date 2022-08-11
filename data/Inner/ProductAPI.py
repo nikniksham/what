@@ -3,6 +3,7 @@ from data.Inner.main_file import raise_error, check_admin
 from data.category import Category
 from data.product import Product
 from data.ticket import Ticket
+from sqlalchemy import func, and_
 
 
 def find_by_id(id, session):
@@ -22,13 +23,22 @@ def get_product_by_id(product_id):
     return data
 
 
+def get_product_by_category_id(category_id):
+    session = db_session.create_session()
+    products = session.query(Product).filter(Product.category_id == category_id).all()
+    data = [item.to_dict(only=("name", "link", "max_discount", "bad_count", "bad_price", "good_count", 'good_price',
+                               "in_stoke", "image")) for item in products]
+    session.close()
+    return data
+
+
 def get_list_products(max_id=None, min_id=None):
     session = db_session.create_session()
     if max_id is None:
         max_id = 999999999999
     if min_id is None:
         min_id = 0
-    products = session.query(Product).filter(Product.id <= max_id).all()
+    products = session.query(Product).filter(and_(Product.id <= max_id, Product.id >= min_id)).all()
     data = [item.to_dict(only=("name", "link", "max_discount", "bad_count", "bad_price", "good_count", 'good_price',
                                "in_stoke", "image")) for item in products]
     session.close()
