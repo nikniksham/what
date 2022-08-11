@@ -9,10 +9,7 @@
             <div class="product__preview">
                 <img src="{{prod.image}}" alt="" class="product__preview-image">
 
-                <div class="product__preview-firstline">
-                    <img src="/static/img/header/favourite.svg" alt="" class="firstline__icon">
-                    <img src="/static/img/header/cart1.svg" alt="" class="firstline__icon">
-                </div>
+                <p class="product__preview-title">{{prod.name}}</p>
 
                 <div class="product__preview-priceline">
                     <div class="priceline__optom">
@@ -25,7 +22,10 @@
                     </div>
                 </div>
 
-                <p class="product__preview-title">{{prod.name}}</p>
+                <div class="product__preview-firstline">
+                    <img src="/static/img/header/favourite.svg" alt="" class="firstline__icon">
+                    <img src="/static/img/header/cart1.svg" alt="" class="firstline__icon">
+                </div>
             </div>
             {% endfor %}
         </div>

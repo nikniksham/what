@@ -221,7 +221,7 @@ p {
 .product__grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  grid-gap: 30px;
+  grid-gap: 50px;
 }
 .product__preview {
   width: 100%;
@@ -232,11 +232,12 @@ p {
 .product__preview-image {
   width: 100%;
   padding: 0 10%;
+  height: 300px;
+  object-fit: contain;
 }
 .product__preview-firstline {
   display: flex;
   justify-content: end;
-  padding-bottom: 10px;
 }
 .product__preview-priceline {
   display: flex;
@@ -258,6 +259,7 @@ p {
   font-family: "Montserrat", sans-serif;
   font-weight: bold;
   font-size: 21px;
+  padding-bottom: 10px;
 }
 
 .firstline__icon {
