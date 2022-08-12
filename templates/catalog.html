@@ -4,6 +4,34 @@
 
 {% block main %}
     <div class="product">
+        <div class="product__params">
+            <div class="params__category">
+                <p class="pramams__title">Категории товаров</p>
+                {% for pra_father in category_map.keys() %}
+                <details class="first">
+                    <summary class="not-child-free">{{pra_father}}</summary>
+                    {% for father in category_map[pra_father].children.keys() %}
+                    <details class="second">
+                        {% if "kids" in category_map[pra_father].children[father] %}
+                        <summary class="not-child-free">{{father}}</summary>
+                        {% else %}
+                        <summary>{{father}}</summary>
+                        {% endif %}
+                        <ul>
+                        {% if "kids" in category_map[pra_father].children[father] %}
+                        {% for kid in category_map[pra_father].children[father].kids %}
+                        <!-- ссылку сюда -->
+                        <li><a href="#">{{kid}}</a></li>
+                        {% endfor %}
+                        {% endif %}
+                        </ul>
+                    </details>
+                    {% endfor %}
+                </details>
+                {% endfor %}
+            </div>
+        </div>
+
         <div class="product__grid">
             {% for prod in products %}
             <div class="product__preview">
