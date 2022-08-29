@@ -15,13 +15,13 @@
                         {% if "kids" in category_map[pra_father].children[father] %}
                         <summary class="not-child-free">{{father}}</summary>
                         {% else %}
-                        <summary>{{father}}</summary>
+                        <summary><a href="/catalog/{{father}}">{{father}}</a></summary>
                         {% endif %}
                         <ul>
                         {% if "kids" in category_map[pra_father].children[father] %}
                         {% for kid in category_map[pra_father].children[father].kids %}
                         <!-- ссылку сюда -->
-                        <li><a href="#">{{kid}}</a></li>
+                        <li><a href="/catalog/{{kid}}">{{kid}}</a></li>
                         {% endfor %}
                         {% endif %}
                         </ul>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>регистрация</title>
+    <meta name="robots" content="none">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="/static/css/AdminPanel.css">
+    <link rel="icon" href="/static/img/logo.png" type="image/x-icon">
+</head>
+<body>
+<div class="container">
+    <form action="" method="post">
+        <div class="wrapper">
+            <div class="header">
+                <h2>Регистрация</h2>
+            </div>
+            <div class="main">
+                <h1>{{ message }}</h1>
+                {{ form.hidden_tag() }}
+                {{ form.csrf_token }}
+                {{ form.fullname.label }}<br>
+                {{ form.fullname(class="form-control") }}<br>
+                {% for error in form.fullname.errors %}
+                <p class="alert alert-danger" role="alert">
+                    {{ error }}
+                </p>
+                {% endfor %}
+                {{ form.email.label }}<br>
+                {{ form.email(class="form-control", type="email") }}<br>
+                {% for error in form.email.errors %}
+                <p class="alert alert-danger" role="alert">
+                    {{ error }}
+                </p>
+                {% endfor %}
+                {{ form.password.label }}<br>
+                {{ form.password(class="form-control", type="password") }}<br>
+                {% for error in form.password.errors %}
+                <p class="alert alert-danger" role="alert">
+                    {{ error }}n
+                </p>
+                {% endfor %}
+                {{ form.password_again.label }}<br>
+                {{ form.password_again(class="form-control", type="password") }}<br>
+                {% for error in form.password_again.errors %}
+                <p class="alert alert-danger" role="alert">
+                    {{ error }}
+                </p>
+                {% endfor %}
+            </div>
+            <div class="submit-block">
+                {{ form.submit(type="submit", class="btn btn-primary submit") }}
+            </div>
+        </div>
+    </form>
+    <div class="go-main">
+        <a href='/'><button class="btn submit">На главную</button></a>
+    </div>
+</div>
+</body>
+</html>
