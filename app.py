@@ -62,6 +62,11 @@ def order():
     return get_render_template('place_an_order.html', title="Оформление заказа")
 
 
+@app.route('/tmp')
+def tmp():
+    return get_render_template('tmp.html', title="Оформление заказа")
+
+
 # @app.route('/place_an_order', methods=['POST', 'GET'])
 # def place_an_order():
 #     if request.method == 'POST':
