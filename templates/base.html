@@ -2,8 +2,9 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;1,700&display=swap" rel="stylesheet">
+    <title>Помогите, я в рабстве... Кто-нибудь, СПАСИТЕ!!!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;1,700&display=swap"
+          rel="stylesheet">
     <link rel="stylesheet" href="/static/css/{% block stylename %}catalog{% endblock %}.css">
 </head>
 <body>
@@ -15,9 +16,11 @@
         </div>
     </a>
     <div class="search">
-        <div class="search__catalog-button">
-            Каталог
-        </div>
+        <a href="/catalog">
+            <div class="search__catalog-button">
+                Каталог
+            </div>
+        </a>
         <div class="search__search">
             <input class="search__search-field" placeholder="Искать товары..." type="text">
             <button class="search__search-button">Поиск</button>
@@ -33,10 +36,15 @@
             <img src="/static/img/header/cart.svg" alt="Корзина">
             <span id="card">0</span>
         </a>
-
+        {% if user_is_auth %}
         <a class="personal__icon" href="/profile">
             <img src="/static/img/header/profile.svg" alt="Профиль">
         </a>
+        {% else %}
+        <a class="personal__icon" href="/register">
+            <img src="/static/img/header/profile.svg" alt="Профиль">
+        </a>
+        {% endif %}
     </div>
 </header>
 
@@ -68,7 +76,7 @@
         </div>
         <div class="footer__block">
             <p class="footer__copy">© 2022 Opt4You<br>
-Все права защищены.</p>
+                Все права защищены.</p>
         </div>
     </div>
     <div class="footer__bottom-menu">

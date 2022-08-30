@@ -1,5 +1,4 @@
 import os
-
 from flask import Flask, render_template
 from flask_login import LoginManager, login_user, current_user, login_required, logout_user
 from flask import Flask, render_template, redirect, request
@@ -9,7 +8,6 @@ from data.category import Category
 from data.forms import LoginForm, RegisterForm
 from data.person import Person
 from data.Inner.ProductAPI import get_list_products, get_product_by_category_id
-import app_logic
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(64)
@@ -20,7 +18,7 @@ login_manager.init_app(app)
 
 category_map = {}
 for_udobstvo = {}
-need_load = False
+need_load = True
 
 
 def load_category_map():
@@ -44,7 +42,7 @@ def load_category_map():
 def get_render_template(template_name, title, **kwargs):
     if not category_map and need_load:
         load_category_map()
-    return render_template(template_name, title=title, category_map=category_map, **kwargs)
+    return render_template(template_name, title=title, category_map=category_map, user_is_auth=not current_user.is_anonymous, **kwargs)
 
 
 @login_manager.user_loader
@@ -103,6 +101,12 @@ def logout_page():
 @app.route('/catalog')
 def catalog():
     return get_render_template('catalog.html', title='Каталог', products=get_list_products(50))
+
+
+@login_required
+@app.route('/profile')
+def profile():
+    return get_render_template('profile.html', title='Профиль')
 
 
 @app.route('/catalog/<string:cat>')

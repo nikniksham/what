@@ -1,10 +1,9 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Личный кабинет</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-</body>
-</html>
+{% block stylename %}catalog{% endblock %}
+
+{% block main %}
+<div>
+    <a href='/logout'><button class="btn submit">Выйти из аккаунта</button></a>
+</div>
+{% endblock %}
