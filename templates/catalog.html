@@ -3,59 +3,60 @@
 {% block stylename %}catalog{% endblock %}
 
 {% block main %}
-    <div class="product">
-        <div class="product__params">
-            <div class="params__category">
-                <p class="pramams__title">Категории товаров</p>
-                {% for pra_father in category_map.keys() %}
-                <details class="first">
-                    <summary class="not-child-free">{{pra_father}}</summary>
-                    {% for father in category_map[pra_father].children.keys() %}
-                    <details class="second">
-                        {% if "kids" in category_map[pra_father].children[father] %}
-                        <summary class="not-child-free">{{father}}</summary>
-                        {% else %}
-                        <summary><a href="/catalog/{{father}}">{{father}}</a></summary>
-                        {% endif %}
-                        <ul>
+<div class="product">
+    <div class="product__params">
+        <div class="params__category">
+            <p class="pramams__title">Категории товаров</p>
+            {% for pra_father in category_map.keys() %}
+            <details class="first">
+                <summary class="not-child-free">{{pra_father}}</summary>
+                {% for father in category_map[pra_father].children.keys() %}
+                <details class="second">
+                    {% if "kids" in category_map[pra_father].children[father] %}
+                    <summary class="not-child-free">{{father}}</summary>
+                    {% else %}
+                    <summary><a href="/catalog/{{father}}">{{father}}</a></summary>
+                    {% endif %}
+                    <ul>
                         {% if "kids" in category_map[pra_father].children[father] %}
                         {% for kid in category_map[pra_father].children[father].kids %}
                         <!-- ссылку сюда -->
                         <li><a href="/catalog/{{kid}}">{{kid}}</a></li>
                         {% endfor %}
                         {% endif %}
-                        </ul>
-                    </details>
-                    {% endfor %}
+                    </ul>
                 </details>
                 {% endfor %}
-            </div>
-        </div>
-
-        <div class="product__grid">
-            {% for prod in products %}
-            <div class="product__preview">
-                <img src="{{prod.image}}" alt="" class="product__preview-image">
-
-                <p class="product__preview-title">{{prod.name}}</p>
-
-                <div class="product__preview-priceline">
-                    <div class="priceline__optom">
-                        <p>Оптовая цена</p>
-                        <span>{{ prod.good_price }}₽</span>
-                    </div>
-                    <div class="priceline__default">
-                        <p>Цена без скидки</p>
-                        <span>{{ prod.bad_price }}₽</span>
-                    </div>
-                </div>
-
-                <div class="product__preview-firstline">
-                    <img src="/static/img/header/favourite.svg" alt="" class="firstline__icon">
-                    <img src="/static/img/header/cart1.svg" alt="" class="firstline__icon">
-                </div>
-            </div>
+            </details>
             {% endfor %}
         </div>
     </div>
+
+    <div class="product__grid">
+        {% for prod in products %}
+        <div class="product__preview">
+            <a href="/product/{{prod.id}}">
+                <img src="{{prod.image}}" alt="" class="product__preview-image">
+            </a>
+            <p class="product__preview-title">{{prod.name}}</p>
+
+            <div class="product__preview-priceline">
+                <div class="priceline__optom">
+                    <p>Оптовая цена</p>
+                    <span>{{ prod.good_price }}₽</span>
+                </div>
+                <div class="priceline__default">
+                    <p>Цена без скидки</p>
+                    <span>{{ prod.bad_price }}₽</span>
+                </div>
+            </div>
+
+            <div class="product__preview-firstline">
+                <img src="/static/img/header/favourite.svg" alt="" class="firstline__icon">
+                <img src="/static/img/header/cart1.svg" alt="" class="firstline__icon">
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
 {% endblock %}

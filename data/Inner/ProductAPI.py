@@ -18,7 +18,8 @@ def get_product_by_id(product_id):
     product, session = find_by_id(product_id, session)
     if type(product) is dict:
         return product
-    data = product.to_dict()
+    data = product.to_dict(only=("name", "link", "max_discount", "bad_count", "bad_price", "good_count", 'good_price',
+                                 "in_stoke", "image", "id"))
     session.close()
     return data
 
@@ -27,7 +28,7 @@ def get_product_by_category_id(category_id):
     session = db_session.create_session()
     products = session.query(Product).filter(Product.category_id == category_id).all()
     data = [item.to_dict(only=("name", "link", "max_discount", "bad_count", "bad_price", "good_count", 'good_price',
-                               "in_stoke", "image")) for item in products]
+                               "in_stoke", "image", "id")) for item in products]
     session.close()
     return data
 
@@ -40,7 +41,7 @@ def get_list_products(max_id=None, min_id=None):
         min_id = 0
     products = session.query(Product).filter(and_(Product.id <= max_id, Product.id >= min_id)).all()
     data = [item.to_dict(only=("name", "link", "max_discount", "bad_count", "bad_price", "good_count", 'good_price',
-                               "in_stoke", "image")) for item in products]
+                               "in_stoke", "image", "id")) for item in products]
     session.close()
     return data
 

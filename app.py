@@ -2,12 +2,14 @@ import os
 from flask import Flask, render_template
 from flask_login import LoginManager, login_user, current_user, login_required, logout_user
 from flask import Flask, render_template, redirect, request
+from flask_restful import abort
+
 from data import db_session
 from data.Inner.PersonAPI import create_person
 from data.category import Category
 from data.forms import LoginForm, RegisterForm
 from data.person import Person
-from data.Inner.ProductAPI import get_list_products, get_product_by_category_id
+from data.Inner.ProductAPI import get_list_products, get_product_by_category_id, get_product_by_id
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(64)
@@ -55,7 +57,8 @@ def load_user(user_id):
 
 @app.route('/')
 def hello_world():
-    return get_render_template('main.html', title='Главная')
+    return redirect("/catalog")
+    # return get_render_template('main.html', title='Главная')
 
 
 @app.route("/register", methods=['GET', 'POST'])
@@ -129,9 +132,12 @@ def order():
     return get_render_template('place_an_order.html', title="Оформление заказа")
 
 
-@app.route('/product/<string:name>')
-def product(name):
-    return get_render_template('product.html', title="Страница товара", name="some thing")
+@app.route('/product/<int:id>')
+def product(id):
+    product = get_product_by_id(id)
+    if "error" in product:
+        abort(404)
+    return get_render_template('product.html', title="Страница товара", product=product)
 
 
 @app.route('/tmp')

@@ -2,10 +2,12 @@
 
 {% block main %}
     <div class="item">
-        <img class="item__image" src="https://cdn.metro-cc.ru/ru/ru_pim_369610001001_01.png?maxwidth=230&maxheight=230&format=jpg&quality=100" alt="">
+        <img class="item__image" src="{{product.image}}" alt={{product.name}}>
         <div class="item__info">
-            <h2 class="item__name">Бурбон</h2>
-            <p class="item__price">100000 <span>₽</span></p>
+            <h2 class="item__name">{{product.name}}</h2>
+            <p class="item__price">Плохая цена {{product.bad_price}}<span>₽</span></p>
+            <p class="item__price">Отличная цена {{product.good_price}}<span>₽</span></p>
+            <p class="item__price">Скидка составляет {{100 - product.good_price / product.bad_price * 100}}<span>%</span></p>
             <button class="item__to-basket">В корзину</button>
         </div>
     </div>
