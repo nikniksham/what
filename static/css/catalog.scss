@@ -132,3 +132,14 @@
 .product-preview {
   padding: 15px 10px;
 }
+
+.item {
+  display: flex;
+  justify-content: space-around;
+  padding: 20px;
+  &__image {
+    width: 500px;
+    height: 500px;
+    object-fit: contain;
+  }
+}
