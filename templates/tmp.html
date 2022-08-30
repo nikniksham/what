@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block stylename %}tmp{% endblock %}
+
+{% block main %}
+{% for pra_father in category_map.keys() %}
+<p>{{pra_father}}</p>
+<ol>
+    {% for father in category_map[pra_father].children.keys() %}
+    <p>{{father}}</p>
+    <ol>
+    {% if "kids" in category_map[pra_father].children[father] %}
+    {% for kid in category_map[pra_father].children[father].kids %}
+    <li><p>{{kid}}</p></li>
+    {% endfor %}
+    {% endif %}
+    </ol>
+    {% endfor %}
+</ol>
+{% endfor %}
+{% endblock %}
