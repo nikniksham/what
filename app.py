@@ -157,6 +157,7 @@ def tmp():
 #         app_logic.make_an_order(name, email, tel, address, index, payment_method, comment)
 #     return redirect('/')
 
+@login_required
 @application.route("/change-count-in-basket", methods=["POST"])
 def change_count_in_basket():
     req = json.loads(request.form['canvas_data'])
