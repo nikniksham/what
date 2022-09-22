@@ -17,9 +17,7 @@ def create_category(args):
     if not cat:
         cat = Category()
         cat.name = args["name"]
-        cat.link = args["link"]
-        cat.father = args["father"]
-        cat.pra_father = args["pra_father"]
+        cat.id = int(args["id"])
         session.add(cat)
         session.commit()
     cat_id = cat.id
@@ -40,7 +38,7 @@ def create_product(args):
             prod.name = args["name"]
             prod.link = args["link"]
             prod.max_discount = args["max_discount"]
-            prod.in_stoke = args["in_stoke"]
+            prod.in_stoke = args["in_stoke"] == '=TRUE()'
             prod.bad_count = args["bad_count"]
             prod.bad_price = args["bad_price"]
             prod.good_count = args["good_count"]
@@ -60,8 +58,7 @@ ind = 2
 while True:
     if not sheet[f'A{ind}'].value:
         break
-    print(create_category({"name": sheet[f'B{ind}'].value, "father": sheet[f'C{ind}'].value,
-                           "pra_father": sheet[f'D{ind}'].value, "link": sheet[f'E{ind}'].value}))
+    print(create_category({"name": sheet[f'B{ind}'].value, "id": sheet[f"A{ind}"].value}))
     ind += 1
 
 sheet = wb["товары"]
@@ -73,7 +70,7 @@ while True:
         {"cat_id": sheet[f'B{ind}'].value, "name": sheet[f'C{ind}'].value, "max_discount": sheet[f'D{ind}'].value,
          "in_stoke": sheet[f'E{ind}'].value, "link": sheet[f'F{ind}'].value, "bad_price": sheet[f'G{ind}'].value,
          "bad_count": sheet[f'H{ind}'].value, "good_price": sheet[f'I{ind}'].value,
-         "good_count": sheet[f'J{ind}'].value,
+         "good_count": sheet[f'J{ind}'].value, "id": sheet[f"A{ind}"].value,
          "image": sheet[f'K{ind}'].value}))
     ind += 1
 

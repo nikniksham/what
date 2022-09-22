@@ -20,7 +20,5 @@ class Product(SqlAlchemyBase, SerializerMixin):
     category_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("category.id"))
     category = orm.relation('Category')
 
-    ticket = orm.relation('Ticket')
-
     def __repr__(self):
         return f'<Product> Товар {self.id}'

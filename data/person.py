@@ -13,6 +13,7 @@ class Person(SqlAlchemyBase, UserMixin, SerializerMixin):
     fullname = sqlalchemy.Column(sqlalchemy.String)
     email = sqlalchemy.Column(sqlalchemy.String)
     balance = sqlalchemy.Column(sqlalchemy.Integer)
+    orders = sqlalchemy.Column(sqlalchemy.String)
     hashed_password = sqlalchemy.Column(sqlalchemy.String)
 
     type = sqlalchemy.Column(sqlalchemy.String)
@@ -20,8 +21,6 @@ class Person(SqlAlchemyBase, UserMixin, SerializerMixin):
     __mapper_args__ = {
         'polymorphic_on': type,
     }
-
-    ticket = orm.relation('Ticket')
 
     def __repr__(self):
         return f'<Person> {self.id} Базовый юзер {self.fullname}'

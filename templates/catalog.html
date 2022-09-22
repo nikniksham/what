@@ -7,28 +7,11 @@
     <div class="product__params">
         <div class="params__category">
             <p class="pramams__title">Категории товаров</p>
-            {% for pra_father in category_map.keys() %}
-            <details class="first">
-                <summary class="not-child-free">{{pra_father}}</summary>
-                {% for father in category_map[pra_father].children.keys() %}
-                <details class="second">
-                    {% if "kids" in category_map[pra_father].children[father] %}
-                    <summary class="not-child-free">{{father}}</summary>
-                    {% else %}
-                    <summary><a href="/catalog/{{father}}">{{father}}</a></summary>
-                    {% endif %}
-                    <ul>
-                        {% if "kids" in category_map[pra_father].children[father] %}
-                        {% for kid in category_map[pra_father].children[father].kids %}
-                        <!-- ссылку сюда -->
-                        <li><a href="/catalog/{{kid}}">{{kid}}</a></li>
-                        {% endfor %}
-                        {% endif %}
-                    </ul>
-                </details>
+            <ul>
+                {% for cat in category_map %}
+                <li><a href="/catalog/{{cat.name}}">{{cat.name}}</a></li>
                 {% endfor %}
-            </details>
-            {% endfor %}
+            </ul>
         </div>
     </div>
 
@@ -38,6 +21,10 @@
             <a href="/product/{{prod.id}}">
                 <img src="{{prod.image}}" alt="" class="product__preview-image">
             </a>
+            <div class="product__preview-firstline">
+                <img src="/static/img/header/favourite.svg" alt="" class="firstline__icon">
+                <img src="/static/img/header/cart1.svg" alt="" class="firstline__icon" onclick="ToCart({{prod.id}})">
+            </div>
             <p class="product__preview-title">{{prod.name}}</p>
 
             <div class="product__preview-priceline">
@@ -50,13 +37,29 @@
                     <span>{{ prod.bad_price }}₽</span>
                 </div>
             </div>
-
-            <div class="product__preview-firstline">
-                <img src="/static/img/header/favourite.svg" alt="" class="firstline__icon">
-                <img src="/static/img/header/cart1.svg" alt="" class="firstline__icon">
-            </div>
         </div>
         {% endfor %}
     </div>
 </div>
+<script type="text/javascript" src="{{url_for('static', filename='js/JQuery.min.js')}}"></script>
+
+<script>
+function ToCart(id) {
+    $.post( "/change-count-in-basket", {
+        canvas_data: JSON.stringify({prod_id: id, count: 1})
+    }, function(err, req, resp){
+        ans = $.parseJSON(resp.responseText)
+        console.log(ans);
+        // count_in_basket(ans['total_count'])
+        // update_slider(id, ans[id]['count'], ans[id]['cost'], ans[id]['saving'])
+        // update_total(ans['total_count'], ans["total_cost"], ans['total_saving'])
+        // set_button_state(id, true)
+    });
+}
+
+
+
+
+</script>
+
 {% endblock %}

@@ -73,7 +73,7 @@ def delete_self_admin(admin_email, admin_password):
 
 
 def create_admin(admin_email, admin_password, args):
-    admin, session = check_admin(admin_email, 1)
+    admin, session = check_admin(admin_email)
     if type(admin) is dict:
         return admin
 

@@ -2,7 +2,6 @@ from data import db_session
 from data.Inner.main_file import raise_error, check_admin
 from data.category import Category
 from data.product import Product
-from data.ticket import Ticket
 from sqlalchemy import func, and_
 
 
@@ -43,6 +42,16 @@ def get_list_products(max_id=None, min_id=None):
     data = [item.to_dict(only=("name", "link", "max_discount", "bad_count", "bad_price", "good_count", 'good_price',
                                "in_stoke", "image", "id")) for item in products]
     session.close()
+    return data
+
+
+def get_list_products_by_discount(disc):
+    session = db_session.create_session()
+    products = session.query(Product).filter(Product.max_discount >= disc).all()
+    data = [item.to_dict(only=("name", "link", "max_discount", "bad_count", "bad_price", "good_count", 'good_price',
+                               "in_stoke", "image", "id")) for item in products]
+    session.close()
+    print(len(data))
     return data
 
 

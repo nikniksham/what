@@ -1,30 +1,37 @@
+import json
 import os
 from flask import Flask, render_template
 from flask_login import LoginManager, login_user, current_user, login_required, logout_user
-from flask import Flask, render_template, redirect, request
+from flask import Flask, render_template, redirect, request, session
 from flask_restful import abort
-
 from data import db_session
-from data.Inner.PersonAPI import create_person
+from data.Inner.CategoryAPI import get_list_categorys, get_category_by_name
+from data.Inner.OrderAPI import get_order_by_product, create_order, put_order, change_info
+from data.Inner.PersonAPI import create_person, person_order_change
 from data.category import Category
 from data.forms import LoginForm, RegisterForm
 from data.person import Person
-from data.Inner.ProductAPI import get_list_products, get_product_by_category_id, get_product_by_id
+from data.Inner.ProductAPI import get_list_products, get_product_by_category_id, get_product_by_id, get_list_products_by_discount
+from data.product import Product
 
-app = Flask(__name__)
-app.config['SECRET_KEY'] = os.urandom(64)
+application = Flask(__name__)
+application.config['SECRET_KEY'] = "test_key"  # os.urandom(64)
 
 db_session.global_init("db/opt4you.sqlite")
 login_manager = LoginManager()
-login_manager.init_app(app)
+login_manager.init_app(application)
 
 category_map = {}
 for_udobstvo = {}
-need_load = True
+need_load = False
 
 
 def load_category_map():
     session = db_session.create_session()
+    # prods = session.query(Product).all()
+    # for prod in prods:
+    #     session.delete(prod)
+    # session.commit()
     for category in session.query(Category).all():
         if category.pra_father not in category_map:
             category_map[category.pra_father] = {"children": {}}
@@ -42,9 +49,7 @@ def load_category_map():
 
 
 def get_render_template(template_name, title, **kwargs):
-    if not category_map and need_load:
-        load_category_map()
-    return render_template(template_name, title=title, category_map=category_map, user_is_auth=not current_user.is_anonymous, **kwargs)
+    return render_template(template_name, title=title, category_map=get_list_categorys(), user_is_auth=not current_user.is_anonymous, **kwargs)
 
 
 @login_manager.user_loader
@@ -55,13 +60,13 @@ def load_user(user_id):
     return user
 
 
-@app.route('/')
+@application.route('/')
 def hello_world():
     return redirect("/catalog")
     # return get_render_template('main.html', title='Главная')
 
 
-@app.route("/register", methods=['GET', 'POST'])
+@application.route("/register", methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
     if not current_user.is_anonymous:
@@ -78,7 +83,7 @@ def register():
     return get_render_template('register.html', title='Регистрация', form=form)
 
 
-@app.route('/login', methods=['GET', 'POST'])
+@application.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
     if not current_user.is_anonymous:
@@ -94,45 +99,38 @@ def login():
     return get_render_template('login.html', title='Авторизация', form=form)
 
 
-@app.route('/logout')
+@application.route('/logout')
 @login_required
 def logout_page():
     logout_user()
     return redirect("/")
 
 
-@app.route('/catalog')
+@application.route('/catalog')
 def catalog():
-    return get_render_template('catalog.html', title='Каталог', products=get_list_products(50))
+    return get_render_template('catalog.html', title='Каталог', products=[])
 
 
 @login_required
-@app.route('/profile')
+@application.route('/profile')
 def profile():
     return get_render_template('profile.html', title='Профиль')
 
 
-@app.route('/catalog/<string:cat>')
+@application.route('/catalog/<string:cat>')
 def catalog_category(cat):
-    if not category_map and need_load:
-        load_category_map()
-    products = []
-    if cat in for_udobstvo:
-        res = for_udobstvo[cat]
-        if "||" in res:
-            res = res.split("||")
-            products = category_map[res[0]]["children"][res[1]]["kids"][cat]["goods"][0]
-        else:
-            products = category_map[res]["children"][cat]["goods"][0]
-    return get_render_template('catalog.html', title='Каталог', products=products)
+    cat = get_category_by_name(cat)
+    if "error" in cat:
+        return redirect("/")
+    return get_render_template('catalog.html', title='Каталог', products=get_product_by_category_id(cat["id"]))
 
 
-@app.route('/order')
+@application.route('/order')
 def order():
     return get_render_template('place_an_order.html', title="Оформление заказа")
 
 
-@app.route('/product/<int:id>')
+@application.route('/product/<int:id>')
 def product(id):
     product = get_product_by_id(id)
     if "error" in product:
@@ -140,12 +138,12 @@ def product(id):
     return get_render_template('product.html', title="Страница товара", product=product)
 
 
-@app.route('/tmp')
+@application.route('/tmp')
 def tmp():
     return get_render_template('tmp.html', title="Оформление заказа")
 
 
-# @app.route('/place_an_order', methods=['POST', 'GET'])
+# @application.route('/place_an_order', methods=['POST', 'GET'])
 # def place_an_order():
 #     if request.method == 'POST':
 #         name = request.form.get('name')
@@ -158,6 +156,50 @@ def tmp():
 #         app_logic.make_an_order(name, email, tel, address, index, payment_method, comment)
 #     return redirect('/')
 
+@login_required
+@application.route("/change-count-in-basket", methods=["POST"])
+def change_count_in_basket():
+    req = json.loads(request.form['canvas_data'])
+    product = get_product_by_id(req["prod_id"])
+
+    if product is dict:
+        print("Самый умный?", product)
+
+    order = get_order_by_product(req["prod_id"])
+
+    if not order:
+        res = create_order({"info": '', "prod_id": req["prod_id"], "max": product["good_count"], "current": 0})
+        order = get_order_by_product(req["prod_id"])
+
+    order = order[0]
+    res = change_info(order["id"], current_user.id, req['count'])
+
+    if res["id"] in [1, 2, 3]:
+        person_order_change(current_user.email, order["id"], True)
+    elif res["id"] == 0:
+        person_order_change(current_user.email, order["id"], False)
+    print(res)
+
+    # sid = str(res['item'])
+    # if 'message' not in product:
+    #     if not session.get('cart'):
+    #         session['cart'] = {'total_cost': 0, 'total_count': 0, 'total_saving': 0}
+    #     if sid not in session['cart']:
+    #         session['cart'][sid] = {"count": 0, "cost": 0, "saving": 0, 'image': ""}
+    #     session['cart'][sid]['count'] += 1
+    #     session['cart'][sid]['image'] = product['image'].split("//")[0]
+    #     session['cart'][sid]['name'] = product['name']
+    #     session['cart'][sid]['price'] = product['price']
+    #     session['cart'][sid]['old_price'] = product['old_price']
+    #     session['cart'][sid]['cost'] = session['cart'][sid]['count'] * int(product['price'])
+    #     session['cart'][sid]['saving'] = session['cart'][sid]['count'] * (int(product['old_price']) - int(product['price']))
+    #     session.modified = True
+    # eval_cart()
+    # # print(session['cart'])
+    # # print("INCREMENT")
+    # return json.dumps(session['cart'])
+    return json.dumps({})
+
 
 if __name__ == '__main__':
-    app.run()
+    application.run()

@@ -2,7 +2,6 @@ from data import db_session
 from data.category import Category
 from data.Inner.main_file import raise_error, check_admin
 from data.product import Product
-from data.ticket import Ticket
 
 
 def find_by_id(id, session):
@@ -17,7 +16,17 @@ def get_category_by_id(category_id):
     category, session = find_by_id(category_id, session)
     if type(category) is dict:
         return category
-    data = category.to_dict()
+    data = category.to_dict(only=("name", "id"))
+    session.close()
+    return data
+
+
+def get_category_by_name(category_name):
+    session = db_session.create_session()
+    cat = session.query(Category).filter(Category.name == category_name).first()
+    if not cat:
+        return raise_error("категория не найдена", session)[0]
+    data = cat.to_dict(only=("name", "id"))
     session.close()
     return data
 
@@ -25,7 +34,7 @@ def get_category_by_id(category_id):
 def get_list_categorys():
     session = db_session.create_session()
     categorys = session.query(Category).all()
-    data = [item.to_dict(only=("name", "father", "pra_father", "link")) for item in categorys]
+    data = [item.to_dict(only=("name",)) for item in categorys]
     session.close()
     return data
 
@@ -38,18 +47,12 @@ def put_category(admin_email, category_id, args):
     if type(category) is dict:
         return category
     count = 0
-    category_dict = category.to_dict(only=("name", "father", "pra_father", "link"))
+    category_dict = category.to_dict(only=("name",))
     keys = list(filter(lambda key: args[key] is not None and key in category_dict and args[key] != category_dict[key], list(args.keys())))
     for key in keys:
         count += 1
         if key == 'name':
             category.name = args["name"]
-        if key == 'father':
-            category.father = args["father"]
-        if key == 'pra_father':
-            category.pra_father = args["pra_father"]
-        if key == 'link':
-            category.link = args["link"]
     if count == 0:
         return raise_error("Пустой запрос", session)[0]
     session.commit()
@@ -68,10 +71,6 @@ def delete_category(admin_email, admin_password, category_id):
     products = session.query(Product).filter(Product.category_id == category.id).all()
     if products:
         for product in products:
-            tickets = session.query(Ticket).filter(Ticket.product_id == product.id).all()
-            if tickets:
-                for ticket in tickets:
-                    session.delete(ticket)
             session.delete(product)
     session.delete(category)
     session.commit()
@@ -83,13 +82,10 @@ def create_category(admin_email, args):
     admin, session = check_admin(admin_email)
     if type(admin) is dict:
         return admin
-    if not all(args[key] is not None for key in ['name', 'father', 'pra_father', 'link']):
+    if not all(args[key] is not None for key in ['name',]):
         return raise_error('Пропущены некоторые аргументы, необходимые для создания темы', session)[0]
     new_category = Category()
     new_category.name = args["name"]
-    new_category.father = args["father"]
-    new_category.pra_father = args["pra_father"]
-    new_category.link = args["link"]
     session.add(new_category)
     session.commit()
     category_id = new_category.id

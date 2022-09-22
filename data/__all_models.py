@@ -1,1 +1,1 @@
-from data import person, admin, category, product, order, ticket
+from data import person, admin, category, product, order

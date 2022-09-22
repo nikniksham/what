@@ -8,9 +8,6 @@ class Category(SqlAlchemyBase, SerializerMixin):
     __tablename__ = 'category'
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
     name = sqlalchemy.Column(sqlalchemy.String)
-    father = sqlalchemy.Column(sqlalchemy.String, nullable=True)
-    pra_father = sqlalchemy.Column(sqlalchemy.String)
-    link = sqlalchemy.Column(sqlalchemy.String)
 
     product = orm.relation('Product')
 

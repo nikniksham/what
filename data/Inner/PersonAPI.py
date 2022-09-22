@@ -1,6 +1,5 @@
 from data import db_session
 from data.person import Person
-from data.ticket import Ticket
 from data.Inner.main_file import raise_error, check_person, check_password, check_admin
 
 
@@ -15,7 +14,7 @@ def get_self_person(email):
     person, session = check_person(email)
     if type(person) is dict:
         return person
-    data = person.to_dict(only=('id', 'fullname', 'email', "type"))
+    data = person.to_dict(only=('id', 'fullname', 'email', "type", "orders"))
     session.close()
     return data
 
@@ -25,7 +24,7 @@ def put_self_person(email, args):
     if type(person) is dict:
         return person
     count = 0
-    person_dict = person.to_dict(only=('fullname', 'email'))
+    person_dict = person.to_dict(only=('fullname', 'email', 'orders'))
     keys = list(filter(lambda key: args[key] is not None and key in person_dict and args[key] != person_dict[key], list(args.keys())))
     for key in keys:
         count += 1
@@ -35,6 +34,8 @@ def put_self_person(email, args):
             person.email = args['email']
         if key == 'fullname':
             person.fullname = args["fullname"]
+        if key == 'orders':
+            person.orders = args["orders"]
     if "change_password" in args:
         if not person.check_password(args["check_password"]):
             return raise_error("Пароль не совпадает с текущим паролем", session)[0]
@@ -70,6 +71,7 @@ def create_person(args):
     new_person.balance = 0
     new_person.set_password(args["new_password"])
     new_person.type = "person"
+    new_person.orders = ""
 
     session.add(new_person)
     session.commit()
@@ -86,9 +88,29 @@ def get_person_admin(admin_email, person_id):
     person = find_by_id(person_id, session)
     if type(person) is dict:
         return person
-    data = person.to_dict(only=('id', 'fullname', 'email', "type"))
+    data = person.to_dict(only=('id', 'fullname', 'email', "type", 'orders'))
     session.close()
     return data
+
+
+def person_order_change(email, order_id, is_add):
+    person, session = check_person(email)
+    if person is dict:
+        return person
+
+    order_id = str(order_id)
+    orders = person.orders.split("|")
+
+    if is_add and order_id not in orders:
+        orders.append(order_id)
+        person.orders = "|".join(orders)
+
+    elif not is_add and order_id in orders:
+        orders.remove(order_id)
+        person.orders = orders
+
+    session.commit()
+    session.close()
 
 
 def put_person_admin(admin_email, person_id, args):
@@ -101,7 +123,7 @@ def put_person_admin(admin_email, person_id, args):
         return person
 
     count = 0
-    person_dict = person.to_dict(only=('fullname', 'email', "balance"))
+    person_dict = person.to_dict(only=('fullname', 'email', "balance", 'orders'))
     keys = list(filter(lambda key: args[key] is not None and key in person_dict and args[key] != person_dict[key], list(args.keys())))
     for key in keys:
         count += 1
@@ -113,6 +135,8 @@ def put_person_admin(admin_email, person_id, args):
             person.fullname = args["fullname"]
         if key == "balance":
             person.balance = args["balance"]
+        if key == 'orders':
+            person.orders = args['orders']
     if "change_password" in args:
         if not person.check_password(args["check_password"]):
             return raise_error("Пароль не совпадает с текущим паролем", session)[0]
@@ -137,10 +161,6 @@ def delete_person_admin(admin_email, admin_password, person_id):
     person = find_by_id(person_id, session)
     if type(person) is dict:
         return person
-    tickets = session.query(Ticket).filter(Ticket.person_id == person.id).all()
-    if tickets:
-        for ticket in tickets:
-            session.delete(ticket)
     fullname = person.fullname
     session.delete(person)
     session.commit()
@@ -153,6 +173,6 @@ def get_list_person_admin(admin_email):
     if type(admin) is dict:
         return admin
     persons = session.query(Person).all()
-    data = [item.to_dict(only=('id', 'fullname', 'email', "type")) for item in persons]
+    data = [item.to_dict(only=('id', 'fullname', 'email', "type", 'orders')) for item in persons]
     session.close()
     return data
