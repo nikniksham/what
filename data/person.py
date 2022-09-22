@@ -16,10 +16,8 @@ class Person(SqlAlchemyBase, UserMixin, SerializerMixin):
     orders = sqlalchemy.Column(sqlalchemy.String)
     hashed_password = sqlalchemy.Column(sqlalchemy.String)
 
-    type = sqlalchemy.Column(sqlalchemy.String)
-
     __mapper_args__ = {
-        'polymorphic_on': type,
+        'polymorphic_identity': "user",
     }
 
     def __repr__(self):

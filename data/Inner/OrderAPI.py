@@ -37,10 +37,13 @@ def get_list_orders_by_product(prod_id):
     return data
 
 
-def get_order_by_product(prod_id):
+def get_order_by_product(prod_id, good_count=1):
     session = db_session.create_session()
     orders = session.query(Order).filter(and_(Order.prod_id == prod_id, Order.status == 0)).all()
-    data = [item.to_dict(only=("id", "prod_id", "current", "max", "status", 'info')) for item in orders]
+    if not orders:
+        create_order({"info": '', "prod_id": prod_id, "max": good_count, "current": 0})
+        orders = session.query(Order).filter(and_(Order.prod_id == prod_id, Order.status == 0)).all()
+    data = [item.to_dict(only=("id", "prod_id", "current", "max", "status", 'info')) for item in orders][0]
     session.close()
     return data
 
@@ -80,6 +83,7 @@ def change_info(order_id, user_id, change):
     if order.status != 0:
         return raise_error("заказ уже в обработке, его нельзя менять", session)[0]
     users, cur = {}, 0
+    print(order.info)
     for el in order.info.split("|"):
         if el == "":
             continue
@@ -105,7 +109,7 @@ def change_info(order_id, user_id, change):
             users[user_id] += change
             res = {"success": "пользователь увеличил кол-во заказа", 'id': 3}
     order.current = sum([users[key] for key in users.keys()])
-    order.info = "".join([f"{key}:{users[key]}" for key in users.keys()])
+    order.info = "|".join([f"{key}:{users[key]}" for key in users.keys()])
     session.commit()
     return res
 

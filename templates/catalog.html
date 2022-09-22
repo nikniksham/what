@@ -3,6 +3,35 @@
 {% block stylename %}catalog{% endblock %}
 
 {% block main %}
+<script type="text/javascript" src="{{url_for('static', filename='js/JQuery.min.js')}}"></script>
+
+<style>
+.wrapper {
+    margin: 0 auto;
+    max-width: 500px;
+    width: 100%;
+}
+
+.progress__line {
+    background-color: #E66DCB;
+    bottom: 0;
+    color: fff;
+    left: 0;
+    top: 0;
+    position: absolute;
+    text-align: center;
+}
+
+.progress__line-bg {
+    background-color: #F5F5F5;
+    border-radius: 10px;
+    height: 20px;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+</style>
+
 <div class="product">
     <div class="product__params">
         <div class="params__category">
@@ -21,6 +50,37 @@
             <a href="/product/{{prod.id}}">
                 <img src="{{prod.image}}" alt="" class="product__preview-image">
             </a>
+            <div class="progress">
+                <div class="progress__line-bg">
+                    <div class="progress__line" id="progress__line_{{prod.id}}"></div>
+                </div>
+            </div>
+            <script>
+                function progress () {
+                    $.post( "/load-order", {
+                        canvas_data: JSON.stringify({prod_id: {{prod.id}}, good_count: {{prod.good_count}}})
+                    }, function(err, req, resp){
+                        progress_bar($.parseJSON(resp.responseText));
+                    });
+                }
+
+                function progress_bar (ans) {
+                    let elem = document.getElementById('progress__line_' + ans.prod_id),
+                        width = 0,
+                        max = ans["max"],
+                        id = setInterval(progressStatus, 1);
+                        function progressStatus() {
+                            elem.innerHTML = ans.current + "/" + ans.max;
+                            if (width >= 100 * ans.current / ans.max) {
+                                clearInterval(id);
+                            } else {
+                                width = width + 0.5;
+                                elem.style.width = width + '%';
+                            }
+                        }
+                }
+                progress();
+            </script>
             <div class="product__preview-firstline">
                 <img src="/static/img/header/favourite.svg" alt="" class="firstline__icon">
                 <img src="/static/img/header/cart1.svg" alt="" class="firstline__icon" onclick="ToCart({{prod.id}})">
@@ -41,8 +101,6 @@
         {% endfor %}
     </div>
 </div>
-<script type="text/javascript" src="{{url_for('static', filename='js/JQuery.min.js')}}"></script>
-
 <script>
 function ToCart(id) {
     $.post( "/change-count-in-basket", {
@@ -50,6 +108,7 @@ function ToCart(id) {
     }, function(err, req, resp){
         ans = $.parseJSON(resp.responseText)
         console.log(ans);
+        progress_bar(ans);
         // count_in_basket(ans['total_count'])
         // update_slider(id, ans[id]['count'], ans[id]['cost'], ans[id]['saving'])
         // update_total(ans['total_count'], ans["total_cost"], ans['total_saving'])
@@ -57,9 +116,20 @@ function ToCart(id) {
     });
 }
 
-
-
-
+function progress_bar (ans) {
+    let elem = document.getElementById('progress__line_' + ans.prod_id),
+        width = 100 * (ans.current - 1) / ans.max,
+        max = ans["max"],
+        id = setInterval(progressStatus, 1);
+        function progressStatus() {
+            if (width >= 100 * ans.current / ans.max) {
+                clearInterval(id);
+            } else {
+                width = width + 0.5;
+                elem.style.width = width + '%';
+                elem.innerHTML = ans.current + "/" + ans.max;
+            }
+        }
+}
 </script>
-
 {% endblock %}

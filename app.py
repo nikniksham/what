@@ -2,7 +2,7 @@ import json
 import os
 from flask import Flask, render_template
 from flask_login import LoginManager, login_user, current_user, login_required, logout_user
-from flask import Flask, render_template, redirect, request, session
+from flask import Flask, render_template, redirect, request
 from flask_restful import abort
 from data import db_session
 from data.Inner.CategoryAPI import get_list_categorys, get_category_by_name
@@ -157,7 +157,6 @@ def tmp():
 #         app_logic.make_an_order(name, email, tel, address, index, payment_method, comment)
 #     return redirect('/')
 
-@login_required
 @application.route("/change-count-in-basket", methods=["POST"])
 def change_count_in_basket():
     req = json.loads(request.form['canvas_data'])
@@ -166,13 +165,8 @@ def change_count_in_basket():
     if product is dict:
         print("Самый умный?", product)
 
-    order = get_order_by_product(req["prod_id"])
+    order = get_order_by_product(req["prod_id"], product["good_count"])
 
-    if not order:
-        res = create_order({"info": '', "prod_id": req["prod_id"], "max": product["good_count"], "current": 0})
-        order = get_order_by_product(req["prod_id"])
-
-    order = order[0]
     res = change_info(order["id"], current_user.id, req['count'])
 
     if res["id"] in [1, 2, 3]:
@@ -180,6 +174,8 @@ def change_count_in_basket():
     elif res["id"] == 0:
         person_order_change(current_user.email, order["id"], False)
     print(res)
+
+    order = get_order_by_product(req["prod_id"], product["good_count"])
 
     # sid = str(res['item'])
     # if 'message' not in product:
@@ -199,7 +195,15 @@ def change_count_in_basket():
     # # print(session['cart'])
     # # print("INCREMENT")
     # return json.dumps(session['cart'])
-    return json.dumps({})
+    for key in order.keys():
+        product[key] = order[key]
+    return json.dumps(product)
+
+
+@application.route("/load-order", methods=["POST"])
+def load_order():
+    req = json.loads(request.form['canvas_data'])
+    return json.dumps(get_order_by_product(req["prod_id"], req["good_count"]))
 
 
 if __name__ == '__main__':
