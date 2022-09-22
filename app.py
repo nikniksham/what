@@ -11,7 +11,8 @@ from data.Inner.PersonAPI import create_person, person_order_change
 from data.category import Category
 from data.forms import LoginForm, RegisterForm
 from data.person import Person
-from data.Inner.ProductAPI import get_list_products, get_product_by_category_id, get_product_by_id, get_list_products_by_discount
+from data.Inner.ProductAPI import get_list_products, get_product_by_category_id, get_product_by_id, \
+    get_list_products_by_discount, get_more_cheap_products
 from data.product import Product
 
 application = Flask(__name__)
@@ -108,7 +109,7 @@ def logout_page():
 
 @application.route('/catalog')
 def catalog():
-    return get_render_template('catalog.html', title='Каталог', products=[])
+    return get_render_template('catalog.html', title='Каталог', products=get_more_cheap_products(50))
 
 
 @login_required

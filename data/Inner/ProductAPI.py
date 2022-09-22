@@ -45,6 +45,16 @@ def get_list_products(max_id=None, min_id=None):
     return data
 
 
+def get_more_cheap_products(count):
+    session = db_session.create_session()
+    prods = session.query(Product).all()
+    prods.sort(key=lambda x: -x.max_discount)
+    prods = [item.to_dict(only=("name", "link", "max_discount", "bad_count", "bad_price", "good_count", 'good_price',
+                                "in_stoke", "image", "id")) for item in prods]
+    session.close()
+    return prods[:min(len(prods), count)]
+
+
 def get_list_products_by_discount(disc):
     session = db_session.create_session()
     products = session.query(Product).filter(Product.max_discount >= disc).all()
