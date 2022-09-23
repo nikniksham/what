@@ -39,7 +39,8 @@
 
 <div class="product">
     <div class="product__grid">
-        {% for prod in products %}
+        {% for i in range(pages[cur_page][0], pages[cur_page][1]) %}
+        {% set prod = products[i]%}
         <div class="product__preview">
             <a href="/product/{{prod.id}}">
                 <img src="{{prod.image}}" alt="" class="product__preview-image">
