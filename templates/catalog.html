@@ -33,17 +33,6 @@
 </style>
 
 <div class="product">
-    <div class="product__params">
-        <div class="params__category">
-            <p class="pramams__title">Категории товаров</p>
-            <ul>
-                {% for cat in category_map %}
-                <li><a href="/catalog/{{cat.name}}">{{cat.name}}</a></li>
-                {% endfor %}
-            </ul>
-        </div>
-    </div>
-
     <div class="product__grid">
         {% for prod in products %}
         <div class="product__preview">

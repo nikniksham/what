@@ -21,6 +21,9 @@ p {
   padding: 0 40px;
   display: flex;
   justify-content: space-between;
+  & a {
+    text-decoration: none;
+  }
 }
 
 .main {
@@ -80,7 +83,20 @@ p {
       background-size: 100% 100%;
     }
   }
-
+  &__pop-up {
+    z-index: 100000;
+    left: 0;
+    top: 60px;
+    position: absolute;
+    background: white;
+    color: #E66DCB;
+    border-radius: 5px;
+    border: 1px solid;
+    padding: 10px 20px;
+    & div + div {
+      padding-top: 10px;
+    }
+  }
   &__search {
     margin-left: 25px;
     height: 100%;

@@ -21,6 +21,9 @@ p {
   display: flex;
   justify-content: space-between;
 }
+.header a {
+  text-decoration: none;
+}
 
 .main {
   width: 100%;
@@ -73,6 +76,20 @@ p {
   content: " ";
   background: url("/static/img/header/burger.svg");
   background-size: 100% 100%;
+}
+.search__pop-up {
+  z-index: 100000;
+  left: 0;
+  top: 60px;
+  position: absolute;
+  background: white;
+  color: #E66DCB;
+  border-radius: 5px;
+  border: 1px solid;
+  padding: 10px 20px;
+}
+.search__pop-up div + div {
+  padding-top: 10px;
 }
 .search__search {
   margin-left: 25px;
@@ -276,9 +293,10 @@ p {
   padding-left: 15px;
 }
 .product__grid {
+  padding: 0 100px;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  grid-gap: 50px;
+  grid-gap: 40px;
 }
 .product__preview {
   width: 100%;

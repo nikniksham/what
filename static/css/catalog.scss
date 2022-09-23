@@ -64,9 +64,10 @@
     }
   }
   &__grid {
+    padding: 0 100px;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    grid-gap: 50px;
+    grid-gap: 40px;
   }
   &__preview {
     width: 100%;

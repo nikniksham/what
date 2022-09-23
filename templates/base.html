@@ -17,11 +17,14 @@
         </div>
     </a>
     <div class="search">
-        <a href="/catalog">
-            <div class="search__catalog-button">
-                Каталог
+        <div class="search__catalog-button">
+            Каталог
+            <div class="search__pop-up">
+                {% for cat in category_map %}
+                <div><a href="/catalog/{{cat.name}}">{{cat.name}}</a></div>
+                {% endfor %}
             </div>
-        </a>
+        </div>
         <div class="search__search">
             <input class="search__search-field" placeholder="Искать товары..." type="text">
             <button class="search__search-button">Поиск</button>
