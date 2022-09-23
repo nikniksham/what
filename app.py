@@ -157,16 +157,20 @@ def tmp():
 #         app_logic.make_an_order(name, email, tel, address, index, payment_method, comment)
 #     return redirect('/')
 
-@login_required
+
 @application.route("/change-count-in-basket", methods=["POST"])
 def change_count_in_basket():
+    if current_user.is_anonymous:
+        return redirect("/")
     req = json.loads(request.form['canvas_data'])
     product = get_product_by_id(req["prod_id"])
 
     if product is dict:
-        print("Самый умный?", product)
+        return redirect("/")
+    #     print("Самый умный?", product)
 
     order = get_order_by_product(req["prod_id"], product["good_count"])
+    product["old"] = order["current"]
 
     res = change_info(order["id"], current_user.id, req['count'])
 
@@ -174,7 +178,7 @@ def change_count_in_basket():
         person_order_change(current_user.email, order["id"], True)
     elif res["id"] == 0:
         person_order_change(current_user.email, order["id"], False)
-    print(res)
+    # print(res)
 
     order = get_order_by_product(req["prod_id"], product["good_count"])
 
@@ -198,6 +202,7 @@ def change_count_in_basket():
     # return json.dumps(session['cart'])
     for key in order.keys():
         product[key] = order[key]
+    # print(product)
     return json.dumps(product)
 
 

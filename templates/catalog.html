@@ -117,15 +117,18 @@ function ToCart(id) {
 }
 
 function progress_bar (ans) {
+    let width = 100 * (ans.old) / ans.max;
+    if (ans.current == 0 && ans.old != 0) {
+        ans.current = ans.max;
+    }
     let elem = document.getElementById('progress__line_' + ans.prod_id),
-        width = 100 * (ans.current - 1) / ans.max,
         max = ans["max"],
         id = setInterval(progressStatus, 1);
         function progressStatus() {
             if (width >= 100 * ans.current / ans.max) {
                 clearInterval(id);
             } else {
-                width = width + 0.5;
+                width = width + 1;
                 elem.style.width = width + '%';
                 elem.innerHTML = ans.current + "/" + ans.max;
             }
