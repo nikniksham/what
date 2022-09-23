@@ -18,8 +18,8 @@
     </a>
     <div class="search">
         <div class="search__catalog-button">
-            Каталог
-            <div class="search__pop-up">
+            <a onClick="changeDiv()">Каталог</a>
+            <div class="search__pop-up" id="katalog">
                 {% for cat in category_map %}
                 <div><a href="/catalog/{{cat.name}}">{{cat.name}}</a></div>
                 {% endfor %}
@@ -87,6 +87,16 @@
         <a href="#" class="footer__bottom-link">Пользовательское соглашение</a>
         <a href="#" class="footer__bottom-link">Политика обработки персональных данных</a>
     </div>
+    <script>
+      function changeDiv() {
+        if (document.getElementById("katalog").style.visibility == "hidden") {
+            document.getElementById("katalog").style.visibility = "visible";
+        } else {
+            document.getElementById("katalog").style.visibility = "hidden";
+        }
+      }
+      changeDiv();
+    </script>
 </footer>
 </body>
 </html>

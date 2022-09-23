@@ -30,6 +30,11 @@
     position: relative;
     width: 100%;
 }
+
+.brakovannaya_paginaciya {
+
+}
+
 </style>
 
 <div class="product">
@@ -69,6 +74,7 @@
                         }
                 }
                 progress();
+
             </script>
             <div class="product__preview-firstline">
                 <img src="/static/img/header/favourite.svg" alt="" class="firstline__icon">
@@ -90,6 +96,13 @@
         {% endfor %}
     </div>
 </div>
+
+<div>
+    {% for i in range(1, pages|length + 1) %}
+        <h1>{{i}}</h1>
+    {% endfor %}
+</div>
+
 <script>
 function ToCart(id) {
     $.post( "/change-count-in-basket", {
@@ -123,5 +136,6 @@ function progress_bar (ans) {
             }
         }
 }
+
 </script>
 {% endblock %}

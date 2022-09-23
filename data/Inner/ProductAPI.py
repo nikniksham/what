@@ -62,7 +62,7 @@ def get_list_products_by_discount(disc):
     data = [item.to_dict(only=("name", "link", "max_discount", "bad_count", "bad_price", "good_count", 'good_price',
                                "in_stoke", "image", "id")) for item in products]
     session.close()
-    print(len(data))
+    # print(len(data))
     return data
 
 

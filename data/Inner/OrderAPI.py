@@ -83,7 +83,7 @@ def change_info(order_id, user_id, change):
     if order.status != 0:
         return raise_error("заказ уже в обработке, его нельзя менять", session)[0]
     users, cur = {}, 0
-    print(order.info)
+    # print(order.info)
     for el in order.info.split("|"):
         if el == "":
             continue

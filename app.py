@@ -50,6 +50,13 @@ def load_category_map():
 
 
 def get_render_template(template_name, title, **kwargs):
+    # in range(1, products | length // 20 + (0 if (products | length % 20 == 0) else 1) + 1) %}
+    # {{pages.append([(i - 1) * 20, [i * 20, products | length] | min])}}
+    if "products" in kwargs:
+        kwargs["pages"] = []
+        for i in range(1, len(kwargs["products"]) // 20 + (0 if (len(kwargs["products"]) % 20 == 0) else 1) + 1):
+            kwargs["pages"].append([(i - 1) * 20, min([i * 20, len(kwargs['products'])])])
+        kwargs["cur_page"] = 0
     return render_template(template_name, title=title, category_map=get_list_categorys(), user_is_auth=not current_user.is_anonymous, **kwargs)
 
 

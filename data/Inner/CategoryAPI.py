@@ -16,7 +16,7 @@ def get_category_by_id(category_id):
     category, session = find_by_id(category_id, session)
     if type(category) is dict:
         return category
-    data = category.to_dict(only=("name", "id"))
+    data = category.to_dict(only=("name", "id", "name_rus"))
     session.close()
     return data
 
@@ -26,7 +26,7 @@ def get_category_by_name(category_name):
     cat = session.query(Category).filter(Category.name == category_name).first()
     if not cat:
         return raise_error("категория не найдена", session)[0]
-    data = cat.to_dict(only=("name", "id"))
+    data = cat.to_dict(only=("name", "id", "name_rus"))
     session.close()
     return data
 
@@ -34,7 +34,7 @@ def get_category_by_name(category_name):
 def get_list_categorys():
     session = db_session.create_session()
     categorys = session.query(Category).all()
-    data = [item.to_dict(only=("name",)) for item in categorys]
+    data = [item.to_dict(only=("name", "name_rus")) for item in categorys]
     session.close()
     return data
 
@@ -47,12 +47,14 @@ def put_category(admin_email, category_id, args):
     if type(category) is dict:
         return category
     count = 0
-    category_dict = category.to_dict(only=("name",))
+    category_dict = category.to_dict(only=("name", "name_rus"))
     keys = list(filter(lambda key: args[key] is not None and key in category_dict and args[key] != category_dict[key], list(args.keys())))
     for key in keys:
         count += 1
         if key == 'name':
             category.name = args["name"]
+        if key == 'name_rus':
+            category.name_rus = args["name_rus"]
     if count == 0:
         return raise_error("Пустой запрос", session)[0]
     session.commit()
@@ -82,10 +84,11 @@ def create_category(admin_email, args):
     admin, session = check_admin(admin_email)
     if type(admin) is dict:
         return admin
-    if not all(args[key] is not None for key in ['name',]):
+    if not all(args[key] is not None for key in ['name', "name_rus"]):
         return raise_error('Пропущены некоторые аргументы, необходимые для создания темы', session)[0]
     new_category = Category()
     new_category.name = args["name"]
+    new_category.name_rus = args["name_rus"]
     session.add(new_category)
     session.commit()
     category_id = new_category.id
