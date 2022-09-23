@@ -14,7 +14,7 @@ def get_self_person(email):
     person, session = check_person(email)
     if type(person) is dict:
         return person
-    data = person.to_dict(only=('id', 'fullname', 'email', "type", "orders"))
+    data = person.to_dict(only=('id', 'fullname', 'email', "orders"))
     session.close()
     return data
 
@@ -88,7 +88,7 @@ def get_person_admin(admin_email, person_id):
     person = find_by_id(person_id, session)
     if type(person) is dict:
         return person
-    data = person.to_dict(only=('id', 'fullname', 'email', "type", 'orders'))
+    data = person.to_dict(only=('id', 'fullname', 'email', 'orders'))
     session.close()
     return data
 
@@ -173,6 +173,6 @@ def get_list_person_admin(admin_email):
     if type(admin) is dict:
         return admin
     persons = session.query(Person).all()
-    data = [item.to_dict(only=('id', 'fullname', 'email', "type", 'orders')) for item in persons]
+    data = [item.to_dict(only=('id', 'fullname', 'email', 'orders')) for item in persons]
     session.close()
     return data

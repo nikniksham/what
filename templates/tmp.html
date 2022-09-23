@@ -1,21 +1,111 @@
 {% extends "base.html" %}
 
-{% block stylename %}tmp{% endblock %}
+{% block stylename %}catalog{% endblock %}
 
 {% block main %}
-{% for pra_father in category_map.keys() %}
-<p>{{pra_father}}</p>
-<ol>
-    {% for father in category_map[pra_father].children.keys() %}
-    <p>{{father}}</p>
-    <ol>
-    {% if "kids" in category_map[pra_father].children[father] %}
-    {% for kid in category_map[pra_father].children[father].kids %}
-    <li><p>{{kid}}</p></li>
-    {% endfor %}
-    {% endif %}
-    </ol>
-    {% endfor %}
-</ol>
-{% endfor %}
+<script type="text/javascript" src="{{url_for('static', filename='js/JQuery.min.js')}}"></script>
+
+<style>
+.wrapper {
+    margin: 0 auto;
+    max-width: 500px;
+    width: 100%;
+}
+
+.progress__line {
+    background-color: #E66DCB;
+    bottom: 0;
+    color: fff;
+    left: 0;
+    top: 0;
+    position: absolute;
+    text-align: center;
+}
+
+.progress__line-bg {
+    background-color: #F5F5F5;
+    border-radius: 10px;
+    height: 20px;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+</style>
+
+<div class="product">
+    <div class="product__params">
+        <div class="params__category">
+            <p class="pramams__title">Категории товаров</p>
+            <ul>
+                {% for cat in category_map %}
+                <li><a href="/catalog/{{cat.name}}">{{cat.name}}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="product__grid">
+        {% for prod in products %}
+        <div class="product__preview">
+            <a href="/product/{{prod.id}}">
+                <img src="{{prod.image}}" alt="" class="product__preview-image">
+            </a>
+            <div class="progress">
+                <div class="progress__line-bg">
+                    <div class="progress__line" id="progress__line_{{prod.id}}"></div>
+                </div>
+            </div>
+            <script>
+                function progress_bar () {
+                    let elem = document.getElementById('progress__line_{{prod.id}}'),
+                        width = 0,
+                        id = setInterval(progressStatus, 1);
+                        function progressStatus() {
+                            if (width >= 100) {
+                                clearInterval(id);
+                            } else {
+                                width = width + 0.5;
+                                elem.style.width = width + '%';
+                                elem.innerHTML = width * 1 + '%';
+                            }
+                        }
+                }
+                progress_bar();
+            </script>
+            <div class="product__preview-firstline">
+                <img src="/static/img/header/favourite.svg" alt="" class="firstline__icon">
+                <img src="/static/img/header/cart1.svg" alt="" class="firstline__icon" onclick="ToCart({{prod.id}})">
+            </div>
+            <p class="product__preview-title">{{prod.name}}</p>
+
+            <div class="product__preview-priceline">
+                <div class="priceline__optom">
+                    <p>Оптовая цена</p>
+                    <span>{{ prod.good_price }}₽</span>
+                </div>
+                <div class="priceline__default">
+                    <p>Цена без скидки</p>
+                    <span>{{ prod.bad_price }}₽</span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+function ToCart(id) {
+    $.post( "/change-count-in-basket", {
+        canvas_data: JSON.stringify({prod_id: id, count: 1})
+    }, function(err, req, resp){
+        ans = $.parseJSON(resp.responseText)
+        console.log(ans);
+        // count_in_basket(ans['total_count'])
+        // update_slider(id, ans[id]['count'], ans[id]['cost'], ans[id]['saving'])
+        // update_total(ans['total_count'], ans["total_cost"], ans['total_saving'])
+        // set_button_state(id, true)
+    });
+}
+</script>
+
 {% endblock %}

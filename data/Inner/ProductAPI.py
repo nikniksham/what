@@ -1,4 +1,5 @@
 from data import db_session
+from data.Inner.OrderAPI import get_order_by_product
 from data.Inner.main_file import raise_error, check_admin
 from data.category import Category
 from data.product import Product
@@ -111,10 +112,6 @@ def delete_product(admin_email, admin_password, product_id):
     product, session = find_by_id(product_id, session)
     if type(product) is dict:
         return product
-    tickets = session.query(Ticket).filter(Ticket.product_id == product.id).all()
-    if tickets:
-        for ticket in tickets:
-            session.delete(ticket)
     session.delete(product)
     session.commit()
     session.close()

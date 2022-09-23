@@ -14,7 +14,7 @@ def get_self_admin(admin_email):
     admin, session = check_admin(admin_email)
     if type(admin) is dict:
         return admin
-    data = admin.to_dict(only=('id', 'fullname', 'email', "type"))
+    data = admin.to_dict(only=('id', 'fullname', 'email', "user_type"))
     session.close()
     return data
 
@@ -24,7 +24,7 @@ def get_list_admin(admin_email):
     if type(admin) is dict:
         return admin
     admins = session.query(Admin).all()
-    data = [item.to_dict(only=('id', 'fullname', 'email', "type")) for item in admins]
+    data = [item.to_dict(only=('id', 'fullname', 'email', "user_type")) for item in admins]
     session.close()
     return data
 
@@ -112,7 +112,7 @@ def get_admin(admin_email, admin_id):
     _admin = find_by_id(admin_id, session)
     if type(_admin) is dict:
         return _admin
-    data = _admin.to_dict(only=('id', 'fullname', 'email', "type"))
+    data = _admin.to_dict(only=('id', 'fullname', 'email', "user_type"))
     session.close()
     return data
 
