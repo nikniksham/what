@@ -280,6 +280,7 @@ button.active {
 
 .first-line__wrapper {
   display: flex;
+  align-items: center;
   & .progress {
     flex: 1 0;
   }

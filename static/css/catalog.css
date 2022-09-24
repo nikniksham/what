@@ -265,6 +265,7 @@ button.active {
 
 .first-line__wrapper {
   display: flex;
+  align-items: center;
 }
 .first-line__wrapper .progress {
   flex: 1 0;

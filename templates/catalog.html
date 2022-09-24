@@ -15,7 +15,7 @@
 .progress__line {
     background-color: #E66DCB;
     bottom: 0;
-    color: #fff;
+    color: fff;
     left: 0;
     top: 0;
     position: absolute;
@@ -67,9 +67,6 @@
                         <div class="progress__line" id="progress__line_{{prod.id}}"></div>
                     </div>
                 </div>
-            </div>
-
-            <div class="product__preview-firstline">
                 <img src="/static/img/header/favourite.svg" alt="" class="firstline__icon">
                 <img src="/static/img/header/cart1.svg" alt="" class="firstline__icon" onclick="ToCart({{prod.id}})">
             </div>
@@ -129,6 +126,7 @@ function progress_bar (ans) {
             } else {
                 width = width + 1;
                 elem.style.width = width + '%';
+                elem.innerHTML = ans.current + '/' + ans.max;
             }
         }
 }
