@@ -38,10 +38,10 @@
 </style>
 
 <div class="product">
-    <div class="product__grid">
-        {% for i in range(pages[cur_page][0], pages[cur_page][1]) %}
+    <div class="product__grid" id="products">
+        {% for i in range(products|length) %}
         {% set prod = products[i]%}
-        <div class="product__preview">
+        <div class="product__preview hidden">
             <a href="/product/{{prod.id}}">
                 <img src="{{prod.image}}" alt="" class="product__preview-image">
             </a>
@@ -98,9 +98,10 @@
     </div>
 </div>
 
-<div>
+<div class="pagination">
+    <p class="pagination__text">Страницы:</p>
     {% for i in range(1, pages|length + 1) %}
-        <h1>{{i}}</h1>
+        <button class="pagination__button" onclick="openPage({{ i }})">{{i}}</button>
     {% endfor %}
 </div>
 
@@ -139,4 +140,5 @@ function progress_bar (ans) {
 }
 
 </script>
+<script type="text/javascript" src="{{url_for('static', filename='js/openPage.js')}}"></script>
 {% endblock %}
