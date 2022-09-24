@@ -1,33 +1,23 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Логин</title>
-    <meta name="robots" content="none">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" href="/static/css/AdminPanel.css">
-    <link rel="icon" href="/static/img/logo.png" type="image/x-icon">
-</head>
-<body>
-<div class="container">
-    <form action="" method="post">
-        <div class="wrapper">
-            <div class="header">
-                <h2>Авторизация</h2>
-            </div>
-            <div class="main">
+{% extends "base.html" %}
+
+{% block stylename %}catalog{% endblock %}
+
+{% block main %}
+<div class="aligner">
+    <div class="wrapper">
+        <form action="" method="post">
+            <h2>Войти в свою учётную запись</h2>
+            <div class="main-block">
                 <div>{{ message }}</div>
                 {{ form.hidden_tag() }}
                 {{ form.csrf_token }}
-                {{ form.email.label }}<br>
-                {{ form.email(class="form-control") }}<br>
+                {{ form.email(class="form-control", placeholder="Ваш Email") }}<br>
                 {% for error in form.email.errors %}
                 <div class="alert alert-danger" role="alert">
                     {{ error }}
                 </div>
                 {% endfor %}
-                {{ form.password.label }}<br>
-                {{ form.password(class="form-control", type="password") }}<br>
+                {{ form.password(class="form-control", type="password", placeholder="Пароль") }}<br>
                 {% for error in form.password.errors %}
                 <div class="alert alert-danger" role="alert">
                     {{ error }}
@@ -37,18 +27,8 @@
             <div class="submit-block">
                 {{ form.submit(type="submit", class="btn btn-primary submit") }}
             </div>
-        </div>
-    </form>
-    <div class="go-main">
-        <a href='/register'>
-            <button class="btn submit">Зарегистрироваться</button>
-        </a>
-    </div>
-    <div class="go-main">
-        <a href='/'>
-            <button class="btn submit">На главную</button>
-        </a>
+        </form>
+        <p>Нет учётной записи? <a href='/register'>Зарегистрироваться</a></p>
     </div>
 </div>
-</body>
-</html>
+{% endblock %}
