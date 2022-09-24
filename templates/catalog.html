@@ -15,7 +15,7 @@
 .progress__line {
     background-color: #E66DCB;
     bottom: 0;
-    color: fff;
+    color: #fff;
     left: 0;
     top: 0;
     position: absolute;
@@ -45,39 +45,39 @@
             <a href="/product/{{prod.id}}">
                 <img src="{{prod.image}}" alt="" class="product__preview-image">
             </a>
-            <div class="progress">
-                <div class="progress__line-bg">
-                    <div class="progress__line" id="progress__line_{{prod.id}}"></div>
+            <div class="first-line__wrapper">
+                <div class="progress">
+                    <div class="progress__line-bg">
+                        <div class="progress__line" id="progress__line_{{prod.id}}"></div>
+                    </div>
                 </div>
-            </div>
-            <script>
-                function progress () {
-                    $.post( "/load-order", {
-                        canvas_data: JSON.stringify({prod_id: {{prod.id}}, good_count: {{prod.good_count}}})
-                    }, function(err, req, resp){
-                        progress_bar($.parseJSON(resp.responseText));
-                    });
-                }
-
-                function progress_bar (ans) {
-                    let elem = document.getElementById('progress__line_' + ans.prod_id),
+                <script>
+                    function progress () {
+                        $.post( "/load-order", {
+                            canvas_data: JSON.stringify({prod_id: {{prod.id}}, good_count: {{prod.good_count}}})
+                        }, function(err, req, resp){
+                            progress_bar($.parseJSON(resp.responseText));
+                        });
+                    }
+                    function progress_bar (ans) {
+                        let elem = document.getElementById('progress__line_' + ans.prod_id),
                         width = 0,
                         max = ans["max"],
                         id = setInterval(progressStatus, 1);
+                        elem.innerHTML += ans.current + "/" + ans.max;
                         function progressStatus() {
-                            elem.innerHTML = ans.current + "/" + ans.max;
                             if (width >= 100 * ans.current / ans.max) {
                                 clearInterval(id);
                             } else {
                                 width = width + 0.5;
+                                console.log(elem);
                                 elem.style.width = width + '%';
                             }
                         }
-                }
-                progress();
+                    }
+                    progress();
 
-            </script>
-            <div class="product__preview-firstline">
+                </script>
                 <img src="/static/img/header/favourite.svg" alt="" class="firstline__icon">
                 <img src="/static/img/header/cart1.svg" alt="" class="firstline__icon" onclick="ToCart({{prod.id}})">
             </div>
@@ -138,7 +138,6 @@ function progress_bar (ans) {
             } else {
                 width = width + 1;
                 elem.style.width = width + '%';
-                elem.innerHTML = ans.current + "/" + ans.max;
             }
         }
 }

@@ -278,6 +278,13 @@ button.active {
   color: #ccc;
 }
 
+.first-line__wrapper {
+  display: flex;
+  & .progress {
+    flex: 1 0;
+  }
+}
+
 .pagination {
   padding: 10px 145px;
   display: flex;
