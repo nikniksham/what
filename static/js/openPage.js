@@ -3,7 +3,7 @@ let productsOnPage = 20;
 function openPage(page) {
     let products = document.getElementById('products');
     for (let i=0; i < products.children.length; i++) {
-        if ((i > productsOnPage * (page - 1)) && (i < productsOnPage * page + 1)) {
+        if ((i >= productsOnPage * (page - 1)) && (i < productsOnPage * page)) {
             products.children[i].classList.remove('hidden');
         }
         else {

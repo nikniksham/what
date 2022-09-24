@@ -1,19 +1,17 @@
 import json
 import os
-from flask import Flask, render_template
 from flask_login import LoginManager, login_user, current_user, login_required, logout_user
 from flask import Flask, render_template, redirect, request
 from flask_restful import abort
 from data import db_session
 from data.Inner.CategoryAPI import get_list_categorys, get_category_by_name
-from data.Inner.OrderAPI import get_order_by_product, create_order, put_order, change_info
+from data.Inner.OrderAPI import get_order_by_product, change_info, get_orders_by_product_indexes
 from data.Inner.PersonAPI import create_person, person_order_change
 from data.category import Category
 from data.forms import LoginForm, RegisterForm
 from data.person import Person
-from data.Inner.ProductAPI import get_list_products, get_product_by_category_id, get_product_by_id, \
-    get_list_products_by_discount, get_more_cheap_products
-from data.product import Product
+from data.Inner.ProductAPI import get_product_by_category_id, get_product_by_id, get_more_cheap_products, \
+    search_product_by_text
 
 application = Flask(__name__)
 application.config['SECRET_KEY'] = "test_key"  # os.urandom(64)
@@ -50,8 +48,6 @@ def load_category_map():
 
 
 def get_render_template(template_name, title, **kwargs):
-    # in range(1, products | length // 20 + (0 if (products | length % 20 == 0) else 1) + 1) %}
-    # {{pages.append([(i - 1) * 20, [i * 20, products | length] | min])}}
     if "products" in kwargs:
         kwargs["pages"] = []
         for i in range(1, len(kwargs["products"]) // 20 + (0 if (len(kwargs["products"]) % 20 == 0) else 1) + 1):
@@ -130,7 +126,16 @@ def catalog_category(cat):
     cat = get_category_by_name(cat)
     if "error" in cat:
         return redirect("/")
+    if cat["id"] == 0:
+        return redirect("/catalog")
     return get_render_template('catalog.html', title='Каталог', products=get_product_by_category_id(cat["id"]))
+
+
+@application.route("/catalog/request/<string:text>")
+def catalog_search(text):
+    res = search_product_by_text(text.lower().split("||"))
+    print(len(res))
+    return get_render_template("catalog.html", title="Каталог", products=res)
 
 
 @application.route('/order')
@@ -176,7 +181,7 @@ def change_count_in_basket():
         return redirect("/")
     #     print("Самый умный?", product)
 
-    order = get_order_by_product(req["prod_id"], product["good_count"])
+    order = get_order_by_product(req["prod_id"])
     product["old"] = order["current"]
 
     res = change_info(order["id"], current_user.id, req['count'])
@@ -187,7 +192,7 @@ def change_count_in_basket():
         person_order_change(current_user.email, order["id"], False)
     # print(res)
 
-    order = get_order_by_product(req["prod_id"], product["good_count"])
+    order = get_order_by_product(req["prod_id"])
 
     # sid = str(res['item'])
     # if 'message' not in product:
@@ -216,7 +221,13 @@ def change_count_in_basket():
 @application.route("/load-order", methods=["POST"])
 def load_order():
     req = json.loads(request.form['canvas_data'])
-    return json.dumps(get_order_by_product(req["prod_id"], req["good_count"]))
+    return json.dumps(get_order_by_product(req["prod_id"]))
+
+
+@application.route("/load-all-orders", methods=["POST"])
+def load_all_orders():
+    res = get_orders_by_product_indexes(json.loads(request.form['canvas_data'])["indexes"])
+    return json.dumps(res)
 
 
 if __name__ == '__main__':

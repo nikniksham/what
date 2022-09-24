@@ -1,3 +1,5 @@
+from operator import or_
+
 from data import db_session
 from data.Inner.OrderAPI import get_order_by_product
 from data.Inner.main_file import raise_error, check_admin
@@ -44,6 +46,26 @@ def get_list_products(max_id=None, min_id=None):
                                "in_stoke", "image", "id")) for item in products]
     session.close()
     return data
+
+
+def search_product_by_text(text):
+    text = text[:min(len(text), 10)]
+    session = db_session.create_session()
+    products = []
+    for el in [item.to_dict(only=("name", "link", "max_discount", "bad_count", "bad_price", "good_count", 'good_price', "in_stoke", "image", "id")) for item in session.query(Product).all()]:
+        products.append([0, el])
+
+    for elem in products:
+        name = elem[1]["name"].lower()
+        for word in text:
+            if word in name:
+                elem[0] += 1
+
+    products.sort(key=lambda x: -x[0])
+    # products = products[:min(len(products), 50)]
+    products = list(filter(lambda x: x[0] > 0, products))
+    session.close()
+    return [prod[1] for prod in products]
 
 
 def get_more_cheap_products(count):
