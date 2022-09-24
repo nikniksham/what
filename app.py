@@ -219,5 +219,12 @@ def load_order():
     return json.dumps(get_order_by_product(req["prod_id"], req["good_count"]))
 
 
+@application.route("/load-all-orders", methods=["POST"])
+def load_order():
+    req = json.loads(request.form['canvas_data'])["products"]
+    indexes = [el['id'] for el in req["products"]]
+    return json.dumps({})
+
+
 if __name__ == '__main__':
     application.run()

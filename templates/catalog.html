@@ -37,6 +37,17 @@
 
 </style>
 
+<script>
+    let orders;
+    function get_all_orders () {
+        $.post( "/load-all-orders", {
+            canvas_data: JSON.stringify({products: {{products}} })
+        }, function(err, req, resp){
+            orders = $.parseJSON(resp.responseText);
+        });
+    }
+    get_all_orders();
+</script>
 <div class="product">
     <div class="product__grid">
         {% for i in range(pages[cur_page][0], pages[cur_page][1]) %}

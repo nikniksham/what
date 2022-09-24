@@ -41,7 +41,7 @@ def get_order_by_product(prod_id, good_count=1):
     session = db_session.create_session()
     orders = session.query(Order).filter(and_(Order.prod_id == prod_id, Order.status == 0)).all()
     if not orders:
-        create_order({"info": '', "prod_id": prod_id, "max": good_count, "current": 0})
+        order, session = create_order_func({"info": '', "prod_id": prod_id, "max": good_count, "current": 0}, session)
         orders = session.query(Order).filter(and_(Order.prod_id == prod_id, Order.status == 0)).all()
     data = [item.to_dict(only=("id", "prod_id", "current", "max", "status", 'info')) for item in orders][0]
     session.close()
@@ -132,6 +132,15 @@ def create_order(args):
     if not all(args[key] is not None for key in ["info", "max", "current", "prod_id"]):
         return raise_error('Пропущены некоторые аргументы, необходимые для создания товара', session)[0]
 
+    new_order, session = create_order_func(args, session)
+
+    order_id = new_order.id
+
+    session.close()
+    return {'success': f'Заказ {order_id} создан', 'id': int(order_id)}
+
+
+def create_order_func(args, session):
     new_order = Order()
     new_order.status = 0
     new_order.info = args['info']
@@ -140,6 +149,4 @@ def create_order(args):
     new_order.max = args['max']
     session.add(new_order)
     session.commit()
-    order_id = new_order.id
-    session.close()
-    return {'success': f'Заказ {order_id} создан', 'id': int(order_id)}
+    return new_order, session
