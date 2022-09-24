@@ -26,8 +26,8 @@
             </div>
         </div>
         <div class="search__search">
-            <input class="search__search-field" placeholder="Искать товары..." type="text">
-            <button class="search__search-button">Поиск</button>
+            <input class="search__search-field" placeholder="Искать товары..." type="text" id="searchText">
+            <button class="search__search-button" onclick="search()">Поиск</button>
         </div>
     </div>
     <div class="personal">
@@ -98,5 +98,6 @@
       changeDiv();
     </script>
 </footer>
+<script type="text/javascript" src="{{url_for('static', filename='js/search.js')}}"></script>
 </body>
 </html>
