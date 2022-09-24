@@ -61,7 +61,25 @@ p {
   max-width: 700px;
   display: flex;
 
+  &__pop-up {
+        a {
+        color: #E66DCB !important;
+        &:visited {
+          color: inherit;
+        }
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+  }
   &__catalog-button {
+    -webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+
     position: relative;
     padding: 10px 15px 10px 50px;
     color: #E66DCB;
@@ -71,6 +89,14 @@ p {
     font-size: 18px;
     font-family: 'Montserrat', sans-serif;
     font-weight: 500;
+
+    a {
+      color: #E66DCB !important;
+      text-decoration: none;
+      &:visited {
+        color: inherit;
+      }
+    }
 
     &::after {
       position: absolute;
@@ -242,4 +268,32 @@ p {
   font-family: 'Montserrat', sans-serif;
   font-weight: 500;
   font-size: 16px;
+}
+
+div.hidden {
+  display: none !important;
+}
+
+.pagination {
+  padding: 10px 145px;
+  display: flex;
+  align-items: center;
+  &__text {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 16px;
+    margin-right: 15px;
+  }
+  &__button {
+    background: transparent;
+    border: none;
+    padding: 10px 10px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+    text-decoration: underline;
+    cursor: pointer;
+    & + & {
+      margin-left: 10px;
+    }
+  }
 }
