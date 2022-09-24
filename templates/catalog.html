@@ -38,6 +38,7 @@
 </style>
 
 <script>
+    var orders;
     function get_all_orders () {
         var data = new Array();
         {% for prod in products %}
@@ -46,10 +47,10 @@
         $.post( "/load-all-orders", {
             canvas_data: JSON.stringify({indexes: data})
         }, function(err, req, resp){
-            return $.parseJSON(resp.responseText);
+            orders = $.parseJSON(resp.responseText);
         });
     }
-    let orders = get_all_orders();
+    get_all_orders();
 </script>
 
 <div class="product">
@@ -106,23 +107,25 @@ function ToCart(id) {
         ans = $.parseJSON(resp.responseText)
         console.log(ans);
         progress_bar(ans);
-        // count_in_basket(ans['total_count'])
-        // update_slider(id, ans[id]['count'], ans[id]['cost'], ans[id]['saving'])
-        // update_total(ans['total_count'], ans["total_cost"], ans['total_saving'])
-        // set_button_state(id, true)
     });
 }
 
 function progress_bar (ans) {
-    let width = 100 * (ans.old) / ans.max;
+    let width;
+    if (ans.old) {
+        width = 100 * (ans.old) / ans.max;
+    } else {
+        width = 0;
+    }
+
     if (ans.current == 0 && ans.old != 0) {
         ans.current = ans.max;
     }
-    let elem = document.getElementById('progress__line_' + ans.prod_id),
-        max = ans["max"],
-        id = setInterval(progressStatus, 1);
+
+    let elem = document.getElementById('progress__line_' + ans.prod_id), max = ans["max"], id = setInterval(progressStatus, 1);
         function progressStatus() {
             if (width >= 100 * ans.current / ans.max) {
+                console.log(width);
                 clearInterval(id);
             } else {
                 width = width + 1;
@@ -132,6 +135,21 @@ function progress_bar (ans) {
         }
 }
 
+// console.log(orders);
+// orders.forEach((elem, i) => progress_bar(elem));
+
+let check = setInterval(progressStatus, 10);
+function progressStatus() {
+    if (orders) {
+        for (const [key, value] of Object.entries(orders)) {
+          progress_bar(value);
+        }
+
+        // console.log(orders);
+        // orders.forEach(elem => progress_bar(elem));
+        clearInterval(check);
+    }
+}
 </script>
 <script type="text/javascript" src="{{url_for('static', filename='js/openPage.js')}}"></script>
 {% endblock %}
