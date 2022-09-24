@@ -2,6 +2,11 @@ from sqlalchemy import and_
 from data import db_session
 from data.Inner.main_file import raise_error, check_admin
 from data.order import Order
+from data.product import Product
+
+
+def find_by_id_product(id, session):
+    return session.query(Product).get(id), session
 
 
 def find_by_id(id, session):
@@ -37,15 +42,35 @@ def get_list_orders_by_product(prod_id):
     return data
 
 
-def get_order_by_product(prod_id, good_count=1):
+def get_order_by_product(prod_id):
     session = db_session.create_session()
-    orders = session.query(Order).filter(and_(Order.prod_id == prod_id, Order.status == 0)).all()
-    if not orders:
-        order, session = create_order_func({"info": '', "prod_id": prod_id, "max": good_count, "current": 0}, session)
-        orders = session.query(Order).filter(and_(Order.prod_id == prod_id, Order.status == 0)).all()
-    data = [item.to_dict(only=("id", "prod_id", "current", "max", "status", 'info')) for item in orders][0]
+    data, session = order_ficha(prod_id, session)
     session.close()
     return data
+
+
+def get_orders_by_product_indexes(prod_indexes):
+    session = db_session.create_session()
+    orders = {}
+    for index in prod_indexes:
+        orders[index], session = order_ficha(index, session, True)
+    session.close()
+    return orders
+
+
+def order_ficha(prod_id, session, f=False):
+    product, session = find_by_id_product(prod_id, session)
+    if not product:
+        if f:
+            return None, session
+        return raise_error("Не нашлося", session)
+    orders = session.query(Order).filter(and_(Order.prod_id == prod_id, Order.status == 0)).all()
+    if orders:
+        data = [item.to_dict(only=("id", "prod_id", "current", "max", "status", 'info')) for item in orders][0]
+    else:
+        order, session = create_order_func({"info": '', "prod_id": prod_id, "max": product.good_count, "current": 0}, session)
+        data = order.to_dict(only=("id", "prod_id", "current", "max", "status", 'info'))
+    return data, session
 
 
 def put_order(order_id, args):

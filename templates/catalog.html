@@ -38,16 +38,20 @@
 </style>
 
 <script>
-    let orders;
     function get_all_orders () {
+        var data = new Array();
+        {% for prod in products %}
+            data.push({{prod['id']}});
+        {% endfor %}
         $.post( "/load-all-orders", {
-            canvas_data: JSON.stringify({products: {{products}} })
+            canvas_data: JSON.stringify({indexes: data})
         }, function(err, req, resp){
-            orders = $.parseJSON(resp.responseText);
+            return $.parseJSON(resp.responseText);
         });
     }
-    get_all_orders();
+    let orders = get_all_orders();
 </script>
+
 <div class="product">
     <div class="product__grid" id="products">
         {% for i in range(products|length) %}
@@ -61,33 +65,7 @@
                     <div class="progress__line" id="progress__line_{{prod.id}}"></div>
                 </div>
             </div>
-            <script>
-                function progress () {
-                    $.post( "/load-order", {
-                        canvas_data: JSON.stringify({prod_id: {{prod.id}}, good_count: {{prod.good_count}}})
-                    }, function(err, req, resp){
-                        progress_bar($.parseJSON(resp.responseText));
-                    });
-                }
 
-                function progress_bar (ans) {
-                    let elem = document.getElementById('progress__line_' + ans.prod_id),
-                        width = 0,
-                        max = ans["max"],
-                        id = setInterval(progressStatus, 1);
-                        function progressStatus() {
-                            elem.innerHTML = ans.current + "/" + ans.max;
-                            if (width >= 100 * ans.current / ans.max) {
-                                clearInterval(id);
-                            } else {
-                                width = width + 0.5;
-                                elem.style.width = width + '%';
-                            }
-                        }
-                }
-                progress();
-
-            </script>
             <div class="product__preview-firstline">
                 <img src="/static/img/header/favourite.svg" alt="" class="firstline__icon">
                 <img src="/static/img/header/cart1.svg" alt="" class="firstline__icon" onclick="ToCart({{prod.id}})">

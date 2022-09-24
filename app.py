@@ -6,7 +6,8 @@ from flask import Flask, render_template, redirect, request
 from flask_restful import abort
 from data import db_session
 from data.Inner.CategoryAPI import get_list_categorys, get_category_by_name
-from data.Inner.OrderAPI import get_order_by_product, create_order, put_order, change_info
+from data.Inner.OrderAPI import get_order_by_product, create_order, put_order, change_info, \
+    get_orders_by_product_indexes
 from data.Inner.PersonAPI import create_person, person_order_change
 from data.category import Category
 from data.forms import LoginForm, RegisterForm
@@ -176,7 +177,7 @@ def change_count_in_basket():
         return redirect("/")
     #     print("Самый умный?", product)
 
-    order = get_order_by_product(req["prod_id"], product["good_count"])
+    order = get_order_by_product(req["prod_id"])
     product["old"] = order["current"]
 
     res = change_info(order["id"], current_user.id, req['count'])
@@ -187,7 +188,7 @@ def change_count_in_basket():
         person_order_change(current_user.email, order["id"], False)
     # print(res)
 
-    order = get_order_by_product(req["prod_id"], product["good_count"])
+    order = get_order_by_product(req["prod_id"])
 
     # sid = str(res['item'])
     # if 'message' not in product:
@@ -216,14 +217,12 @@ def change_count_in_basket():
 @application.route("/load-order", methods=["POST"])
 def load_order():
     req = json.loads(request.form['canvas_data'])
-    return json.dumps(get_order_by_product(req["prod_id"], req["good_count"]))
+    return json.dumps(get_order_by_product(req["prod_id"]))
 
 
 @application.route("/load-all-orders", methods=["POST"])
-def load_order():
-    req = json.loads(request.form['canvas_data'])["products"]
-    indexes = [el['id'] for el in req["products"]]
-    return json.dumps({})
+def load_all_orders():
+    return json.dumps(get_orders_by_product_indexes(json.loads(request.form['canvas_data'])["indexes"]))
 
 
 if __name__ == '__main__':
