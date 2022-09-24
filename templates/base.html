@@ -21,7 +21,7 @@
             <a onClick="changeDiv()">Каталог</a>
             <div class="search__pop-up" id="katalog">
                 {% for cat in category_map %}
-                <div><a href="/catalog/{{cat.name}}">{{cat.name}}</a></div>
+                <div><a href="/catalog/{{cat.name}}">{{cat.name_rus}}</a></div>
                 {% endfor %}
             </div>
         </div>

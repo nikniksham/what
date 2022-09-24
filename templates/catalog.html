@@ -113,12 +113,11 @@ function progress_bar (ans) {
     let width;
     if (ans.old) {
         width = 100 * (ans.old) / ans.max;
+        if (ans.current == 0 && ans.old != 0) {
+            ans.current = ans.max;
+        }
     } else {
         width = 0;
-    }
-
-    if (ans.current == 0 && ans.old != 0) {
-        ans.current = ans.max;
     }
 
     let elem = document.getElementById('progress__line_' + ans.prod_id), max = ans["max"], id = setInterval(progressStatus, 1);
