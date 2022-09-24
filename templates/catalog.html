@@ -105,7 +105,6 @@ function ToCart(id) {
         canvas_data: JSON.stringify({prod_id: id, count: 1})
     }, function(err, req, resp){
         ans = $.parseJSON(resp.responseText)
-        console.log(ans);
         progress_bar(ans);
     });
 }
@@ -125,7 +124,6 @@ function progress_bar (ans) {
     let elem = document.getElementById('progress__line_' + ans.prod_id), max = ans["max"], id = setInterval(progressStatus, 1);
         function progressStatus() {
             if (width >= 100 * ans.current / ans.max) {
-                console.log(width);
                 clearInterval(id);
             } else {
                 width = width + 1;
@@ -135,7 +133,6 @@ function progress_bar (ans) {
         }
 }
 
-// console.log(orders);
 // orders.forEach((elem, i) => progress_bar(elem));
 
 let check = setInterval(progressStatus, 10);
@@ -145,7 +142,6 @@ function progressStatus() {
           progress_bar(value);
         }
 
-        // console.log(orders);
         // orders.forEach(elem => progress_bar(elem));
         clearInterval(check);
     }
