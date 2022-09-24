@@ -259,6 +259,10 @@ div.hidden {
   display: none !important;
 }
 
+button.active {
+  color: #ccc;
+}
+
 .pagination {
   padding: 10px 145px;
   display: flex;
