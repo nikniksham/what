@@ -6,7 +6,7 @@ from data.Inner.main_file import raise_error, check_person, check_password, chec
 def find_by_id(id, session):
     person = session.query(Person).get(id)
     if not person:
-        return raise_error(f"Аккаунт не найден", session)[0]
+        return raise_error(f"Аккаунт не найден", session)
     return person, session
 
 

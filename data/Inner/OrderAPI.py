@@ -12,7 +12,7 @@ def find_by_id_product(id, session):
 def find_by_id(id, session):
     order = session.query(Order).get(id)
     if not order:
-        return raise_error(f"Заказ не найден", session)[0]
+        return raise_error(f"Заказ не найден", session)
     return order, session
 
 
@@ -142,7 +142,7 @@ def change_info(order_id, user_id, change):
 def delete_order(admin_email, admin_password, order_id):
     admin, session = check_admin(admin_email)
     if not admin.check_password(admin_password):
-        return raise_error("Неправильный пароль")[0]
+        return raise_error("Неправильный пароль")
     order, session = find_by_id(order_id, session)
     if type(order) is dict:
         return order

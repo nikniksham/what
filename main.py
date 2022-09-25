@@ -1,8 +1,8 @@
 import openpyxl
-
 from data import db_session
 from data.category import Category
 from data.product import Product
+from data.Inner.ProductAPI import put_product
 
 db_session.global_init("db/opt4you.sqlite")
 
@@ -53,26 +53,34 @@ def create_product(args):
     return {'success': f'Товар {args["name"]} создан', 'id': prod_id}
 
 
-sheet = wb["категории"]
-ind = 2
-while True:
-    if not sheet[f'A{ind}'].value:
-        break
-    print(create_category({"name": sheet[f'B{ind}'].value, "id": sheet[f"A{ind}"].value}))
-    ind += 1
-
-sheet = wb["товары"]
-ind = 2
-while True:
-    if not sheet[f'A{ind}'].value:
-        break
-    print(create_product(
-        {"cat_id": sheet[f'B{ind}'].value, "name": sheet[f'C{ind}'].value, "max_discount": sheet[f'D{ind}'].value,
-         "in_stoke": sheet[f'E{ind}'].value, "link": sheet[f'F{ind}'].value, "bad_price": sheet[f'G{ind}'].value,
-         "bad_count": sheet[f'H{ind}'].value, "good_price": sheet[f'I{ind}'].value,
-         "good_count": sheet[f'J{ind}'].value, "id": sheet[f"A{ind}"].value,
-         "image": sheet[f'K{ind}'].value}))
-    ind += 1
-
-session.commit()
-session.close()
+# sheet = wb["категории"]
+# ind = 2
+# while True:
+#     if not sheet[f'A{ind}'].value:
+#         break
+#     print(create_category({"name": sheet[f'B{ind}'].value, "id": sheet[f"A{ind}"].value}))
+#     ind += 1
+#
+# sheet = wb["товары"]
+# ind = 2
+# while True:
+#     if not sheet[f'A{ind}'].value:
+#         break
+#     print(create_product(
+#         {"cat_id": sheet[f'B{ind}'].value, "name": sheet[f'C{ind}'].value, "max_discount": sheet[f'D{ind}'].value,
+#          "in_stoke": sheet[f'E{ind}'].value, "link": sheet[f'F{ind}'].value, "bad_price": sheet[f'G{ind}'].value,
+#          "bad_count": sheet[f'H{ind}'].value, "good_price": sheet[f'I{ind}'].value,
+#          "good_count": sheet[f'J{ind}'].value, "id": sheet[f"A{ind}"].value,
+#          "image": sheet[f'K{ind}'].value}))
+#     ind += 1
+#
+# sheet = wb["товары"]
+# ind = 2
+# while True:
+#     if not sheet[f'A{ind}'].value:
+#         break
+#     print(int(sheet[f'A{ind}'].value), sheet[f"L{ind}"].value, sheet[f'M{ind}'].value)
+#     print(put_product("admin@admin.com", ind - 1, {"description": sheet[f"L{ind}"].value, "specifications": sheet[f'M{ind}'].value}))
+#     ind += 1
+# session.commit()
+# session.close()

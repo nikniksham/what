@@ -11,7 +11,7 @@ from sqlalchemy import func, and_
 def find_by_id(id, session):
     product = session.query(Product).get(id)
     if not product:
-        return raise_error(f"Товар не найден", session)[0]
+        return raise_error(f"Товар не найден", session)
     return product, session
 
 
@@ -21,7 +21,7 @@ def get_product_by_id(product_id):
     if type(product) is dict:
         return product
     data = product.to_dict(only=("name", "link", "max_discount", "bad_count", "bad_price", "good_count", 'good_price',
-                                 "in_stoke", "image", "id"))
+                                 "in_stoke", "image", "id", "description", "specifications"))
     session.close()
     return data
 
@@ -30,7 +30,7 @@ def get_product_by_category_id(category_id):
     session = db_session.create_session()
     products = session.query(Product).filter(Product.category_id == category_id).all()
     data = [item.to_dict(only=("name", "link", "max_discount", "bad_count", "bad_price", "good_count", 'good_price',
-                               "in_stoke", "image", "id")) for item in products]
+                               "in_stoke", "image", "id", "description", "specifications")) for item in products]
     session.close()
     return data
 
@@ -43,7 +43,7 @@ def get_list_products(max_id=None, min_id=None):
         min_id = 0
     products = session.query(Product).filter(and_(Product.id <= max_id, Product.id >= min_id)).all()
     data = [item.to_dict(only=("name", "link", "max_discount", "bad_count", "bad_price", "good_count", 'good_price',
-                               "in_stoke", "image", "id")) for item in products]
+                               "in_stoke", "image", "id", "description", "specifications")) for item in products]
     session.close()
     return data
 
@@ -52,7 +52,7 @@ def search_product_by_text(text):
     text = text[:min(len(text), 10)]
     session = db_session.create_session()
     products = []
-    for el in [item.to_dict(only=("name", "link", "max_discount", "bad_count", "bad_price", "good_count", 'good_price', "in_stoke", "image", "id")) for item in session.query(Product).all()]:
+    for el in [item.to_dict(only=("name", "link", "max_discount", "bad_count", "bad_price", "good_count", 'good_price', "in_stoke", "image", "id", "description", "specifications")) for item in session.query(Product).all()]:
         products.append([0, el])
 
     for elem in products:
@@ -73,7 +73,7 @@ def get_more_cheap_products(count):
     prods = session.query(Product).all()
     prods.sort(key=lambda x: -x.max_discount)
     prods = [item.to_dict(only=("name", "link", "max_discount", "bad_count", "bad_price", "good_count", 'good_price',
-                                "in_stoke", "image", "id")) for item in prods]
+                                "in_stoke", "image", "id", "description", "specifications")) for item in prods]
     session.close()
     return prods[:min(len(prods), count)]
 
@@ -82,7 +82,7 @@ def get_list_products_by_discount(disc):
     session = db_session.create_session()
     products = session.query(Product).filter(Product.max_discount >= disc).all()
     data = [item.to_dict(only=("name", "link", "max_discount", "bad_count", "bad_price", "good_count", 'good_price',
-                               "in_stoke", "image", "id")) for item in products]
+                               "in_stoke", "image", "id", "description", "specifications")) for item in products]
     session.close()
     # print(len(data))
     return data
@@ -97,7 +97,7 @@ def put_product(admin_email, product_id, args):
         return product
     count = 0
     product_dict = product.to_dict(only=("name", "link", "max_discount", "bad_count", "bad_price", "good_count",
-                                         'good_price', "in_stoke", "image"))
+                                         'good_price', "in_stoke", "image", "description", "specifications"))
     keys = list(filter(lambda key: args[key] is not None and key in product_dict and args[key] != product_dict[key], list(args.keys())))
     for key in keys:
         count += 1
@@ -119,6 +119,10 @@ def put_product(admin_email, product_id, args):
             product.in_stoke = args["in_stoke"]
         if key == 'image':
             product.image = args["image"]
+        if key == 'description':
+            product.description = args["description"]
+        if key == 'specifications':
+            product.specifications = args["specifications"]
     if count == 0:
         return raise_error("Пустой запрос", session)[0]
     session.commit()
@@ -145,7 +149,7 @@ def create_product(admin_email, args):
     if type(admin) is dict:
         return admin
     if not all(args[key] is not None for key in ["name", "link", "max_discount", "bad_count", "bad_price", "good_count",
-                                                 'good_price', "in_stoke", "image", "category_id"]):
+                                                 'good_price', "in_stoke", "image", "category_id", "description", "specifications"]):
         return raise_error('Пропущены некоторые аргументы, необходимые для создания товара', session)[0]
     category = session.query(Category).filter(Category.id == args["category_id"]).first()
     if not category:
@@ -160,6 +164,8 @@ def create_product(admin_email, args):
     new_product.good_price = args["good_price"]
     new_product.in_stoke = args["in_stoke"]
     new_product.image = args["image"]
+    new_product.description = args["description"]
+    new_product.specifications = args["specifications"]
     category.add(new_product)
     session.merge(category)
     session.commit()

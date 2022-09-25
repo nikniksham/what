@@ -6,7 +6,7 @@ from data.Inner.main_file import raise_error, check_admin, check_password
 def find_by_id(id, session):
     admin = session.query(Admin).get(id)
     if not admin:
-        return raise_error(f"Админ не найден", session)[0]
+        return raise_error(f"Админ не найден", session)
     return admin, session
 
 
@@ -156,7 +156,7 @@ def put_admin_admin(admin_email, admin_id, args):
 def delete_admin_admin(admin_email, admin_password, admin_id):
     admin, session = check_admin(admin_email)
     if not admin.check_password(admin_password):
-        return raise_error("Неправильный пароль")[0]
+        return raise_error("Неправильный пароль")
 
     _admin = find_by_id(admin_id, session)
     if type(_admin) is dict:

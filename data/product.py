@@ -16,6 +16,8 @@ class Product(SqlAlchemyBase, SerializerMixin):
     good_price = sqlalchemy.Column(sqlalchemy.Integer)
     in_stoke = sqlalchemy.Column(sqlalchemy.Boolean)
     image = sqlalchemy.Column(sqlalchemy.String)
+    description = sqlalchemy.Column(sqlalchemy.String)
+    specifications = sqlalchemy.Column(sqlalchemy.String)
 
     category_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("category.id"))
     category = orm.relation('Category')
