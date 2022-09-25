@@ -309,3 +309,49 @@ button.active {
     }
   }
 }
+
+.aligner {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.wrapper {
+  margin: 100px 0;
+  width: 600px;
+  padding: 50px 40px;
+  background: #F1F1F1;
+  & h2 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 24px;
+    text-align: center;
+    padding-bottom: 40px;
+  }
+  & .form-control {
+    background: white;
+    border: solid 1px #DDD;
+    width: 100%;
+    padding: 15px 15px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 16px;
+    margin-bottom: 20px;
+  }
+  & p {
+    padding-top: 40px;
+    text-align: center;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+  }
+}
+
+.btn-primary {
+  width: 100%;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 700;
+  color: white;
+  border-radius: 5px;
+  border: none;
+  padding: 15px 40px;
+  background: #6D87E6;
+}
