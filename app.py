@@ -1,7 +1,7 @@
 import json
 import os
 from flask_login import LoginManager, login_user, current_user, login_required, logout_user
-from flask import Flask, render_template, redirect, request
+from flask import Flask, render_template, redirect, request, session
 from flask_restful import abort
 from data import db_session
 from data.Inner.CategoryAPI import get_list_categorys, get_category_by_name
@@ -11,7 +11,7 @@ from data.category import Category
 from data.forms import LoginForm, RegisterForm
 from data.person import Person
 from data.Inner.ProductAPI import get_product_by_category_id, get_product_by_id, get_more_cheap_products, \
-    search_product_by_text
+    search_product_by_text, get_all_products
 
 application = Flask(__name__)
 application.config['SECRET_KEY'] = "test_key"  # os.urandom(64)
@@ -53,7 +53,8 @@ def get_render_template(template_name, title, **kwargs):
         for i in range(1, len(kwargs["products"]) // 20 + (0 if (len(kwargs["products"]) % 20 == 0) else 1) + 1):
             kwargs["pages"].append([(i - 1) * 20, min([i * 20, len(kwargs['products'])])])
         kwargs["cur_page"] = 0
-    return render_template(template_name, title=title, category_map=get_list_categorys(), user_is_auth=not current_user.is_anonymous, **kwargs)
+    return render_template(template_name, title=title, category_map=get_list_categorys(), user_is_auth=not current_user.is_anonymous,
+                           cart=(session['cart'] if session.get('cart') else None), **kwargs)
 
 
 @login_manager.user_loader
@@ -110,6 +111,11 @@ def logout_page():
     return redirect("/")
 
 
+@application.route('/cart')
+def cart():
+    return get_render_template('cart.html', title='Каталог', products=get_more_cheap_products(50))
+
+
 @application.route('/catalog')
 def catalog():
     return get_render_template('catalog.html', title='Каталог', products=get_more_cheap_products(50))
@@ -134,7 +140,6 @@ def catalog_category(cat):
 @application.route("/catalog/request/<string:text>")
 def catalog_search(text):
     res = search_product_by_text(text.lower().split("||"))
-    print(len(res))
     return get_render_template("catalog.html", title="Каталог", products=res)
 
 
@@ -174,12 +179,44 @@ def tmp():
 def change_count_in_basket():
     if current_user.is_anonymous:
         return redirect("/")
+
     req = json.loads(request.form['canvas_data'])
     product = get_product_by_id(req["prod_id"])
 
     if product is dict:
         return redirect("/")
-    #     print("Самый умный?", product)
+    #
+    if not session.get('cart'):
+        session['cart'] = {'orders': {}, 'total_count': 0, 'total_cost': 0}
+
+    req["prod_id"] = str(req["prod_id"])
+
+    if req["prod_id"] not in session['cart']['orders'] and req["count"] > 0:
+        session['cart']['orders'][req["prod_id"]] = [min(999, req["count"]), product['good_price']]
+    elif req["count"] > 0:
+        session['cart']['orders'][req["prod_id"]][0] = min(999, req["count"] + session['cart']['orders'][req["prod_id"]][0])
+    elif req["prod_id"] in session['cart']['orders'] and req["count"] < 0:
+        if session['cart']['orders'][req["prod_id"]][0] + req["count"] > 0:
+            session['cart']['orders'][req["prod_id"]][0] += req["count"]
+        else:
+            del session['cart']['orders'][req["prod_id"]]
+
+    keys = list(session['cart']['orders'].keys())
+    session['cart']['total_count'] = sum([session['cart']['orders'][key][0] for key in keys])
+    session['cart']['total_cost'] = sum([session['cart']['orders'][key][0] * session['cart']['orders'][key][1] for key in keys])
+    # print(session['cart'])
+    return json.dumps(session['cart'])
+
+
+@application.route("/make-order", methods=["POST"])
+def make_order():
+    if current_user.is_anonymous:
+        return redirect("/")
+    req = json.loads(request.form['canvas_data'])
+    product = get_product_by_id(req["prod_id"])
+
+    if product is dict:
+        return redirect("/")
 
     order = get_order_by_product(req["prod_id"])
     product["old"] = order["current"]
@@ -190,31 +227,12 @@ def change_count_in_basket():
         person_order_change(current_user.email, order["id"], True)
     elif res["id"] == 0:
         person_order_change(current_user.email, order["id"], False)
-    # print(res)
 
     order = get_order_by_product(req["prod_id"])
 
-    # sid = str(res['item'])
-    # if 'message' not in product:
-    #     if not session.get('cart'):
-    #         session['cart'] = {'total_cost': 0, 'total_count': 0, 'total_saving': 0}
-    #     if sid not in session['cart']:
-    #         session['cart'][sid] = {"count": 0, "cost": 0, "saving": 0, 'image': ""}
-    #     session['cart'][sid]['count'] += 1
-    #     session['cart'][sid]['image'] = product['image'].split("//")[0]
-    #     session['cart'][sid]['name'] = product['name']
-    #     session['cart'][sid]['price'] = product['price']
-    #     session['cart'][sid]['old_price'] = product['old_price']
-    #     session['cart'][sid]['cost'] = session['cart'][sid]['count'] * int(product['price'])
-    #     session['cart'][sid]['saving'] = session['cart'][sid]['count'] * (int(product['old_price']) - int(product['price']))
-    #     session.modified = True
-    # eval_cart()
-    # # print(session['cart'])
-    # # print("INCREMENT")
-    # return json.dumps(session['cart'])
     for key in order.keys():
         product[key] = order[key]
-    # print(product)
+
     return json.dumps(product)
 
 
@@ -227,6 +245,12 @@ def load_order():
 @application.route("/load-all-orders", methods=["POST"])
 def load_all_orders():
     res = get_orders_by_product_indexes(json.loads(request.form['canvas_data'])["indexes"])
+    return json.dumps(res)
+
+
+@application.route("/load-all-products", methods=["POST"])
+def load_all_products():
+    res = get_all_products(json.loads(request.form['canvas_data'])["indexes"])
     return json.dumps(res)
 
 

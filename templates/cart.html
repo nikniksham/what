@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block main %}
+<script type="text/javascript" src="{{url_for('static', filename='js/JQuery.min.js')}}"></script>
+
+<div class="beautiful_cart">
+    {% if cart and cart.orders|length %}
+    {% for ord in cart.orders.keys() %}
+    <div class="item__info">
+        <img class="item__image" src="" id="image_{{ord}}">
+        <h1 class="item__name" id="name_{{ord}}"></h1>
+        <p class="item__price" id="price_{{ord}}"><span>Оптовая цена</span><br></p>
+        <div class="item__flex">
+            <div class="item__count">
+                <div class="item__count-button" onclick="decrement({{ord}})">-</div>
+                <input class="item__count-number" type="text" value="" id="number_{{ord}}">
+                <div class="item__count-button" onclick="increment({{ord}})">+</div>
+            </div>
+            <button class="item__to-basket" onclick="ChangeCountInCard({{ord}})">В корзину</button>
+        </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+</div>
+
+{% if cart and cart.orders|length %}
+<script>
+    var products, count_start = {}, sArr = {};
+    function get_all_products () {
+        var data = new Array();
+        {% for ord in cart.orders.keys() %}
+            data.push({{ord}});
+            count_start["{{ord}}"] = {{cart.orders[ord][0]}};
+            sArr["{{ord}}"] = document.getElementById("number_{{ord}}");
+        {% endfor %}
+        $.post( "/load-all-products", {
+            canvas_data: JSON.stringify({indexes: data})
+        }, function(err, req, resp){
+            products = $.parseJSON(resp.responseText);
+        });
+    }
+    get_all_products();
+    let check = setInterval(productsStatus, 10);
+    function productsStatus() {
+        if (products) {
+            products.forEach(elem => load_prod(elem));
+            clearInterval(check);
+        }
+    }
+
+    function load_prod(prod) {
+        // console.log(document.getElementById("image_"+prod.id));
+        document.getElementById("image_"+prod.id).src = prod.image;
+        document.getElementById("name_"+prod.id).innerText = prod.name;
+        document.getElementById("price_"+prod.id).innerText = prod.good_price;
+        document.getElementById("number_"+prod.id).value = count_start[prod.id];
+    }
+
+    function increment(id) {
+        if (sArr[id].value < 999) {
+            sArr[id].value++;
+        }
+    }
+
+    function decrement(id) {
+        if (sArr[id].value > 0) {
+            sArr[id].value--;
+        }
+    }
+
+    {% for ord in cart.orders.keys() %}
+        sArr[{{ord}}].addEventListener('input', function (e) {
+            var x = e.target.value.split(/\D/).join("");
+            if (x.length == 0) {
+                x = 0;
+            } else if (x.length > 3) {
+                x = 999;
+            } else if (x < 0) {
+                x = 0;
+            }
+            e.target.value = parseInt(x);
+        });
+    {% endfor %}
+
+    function ChangeCountInCard(id) {
+        $.post( "/change-count-in-basket", {
+            canvas_data: JSON.stringify({prod_id: id, count: parseInt(sArr[id].value) - count_start[id]})
+        }, function(err, req, resp){
+            ans = $.parseJSON(resp.responseText);
+            cart.innerText = ans.total_count;
+            if (id in ans.orders) { count_start[id] = ans.orders[id][0]; }
+        });
+    }
+</script>
+{% endif %}
+{% endblock %}

@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 
 {% block main %}
+<script type="text/javascript" src="{{url_for('static', filename='js/JQuery.min.js')}}"></script>
+
 <div class="item">
     <img class="item__image" src="{{product.image}}" alt={{product.name}}>
     <div class="item__info">
@@ -9,10 +11,14 @@
         <div class="item__flex">
             <div class="item__count">
                 <div class="item__count-button" onclick="decrement()">-</div>
-                <input class="item__count-number" type="text" value="1" id="number" onblur="if(!/.+\s*?\—/.test(this.value)) this.value= this.value.replace(/(.+)[\s\-\—](.+)/i, '$1 — $2')">
+                {% if cart and product.id|string in cart['orders'] %}
+                <input class="item__count-number" type="text" value="{{cart['orders'][product.id|string][0]}}" id="number">
+                {% else %}
+                <input class="item__count-number" type="text" value="0" id="number">
+                {% endif %}
                 <div class="item__count-button" onclick="increment()">+</div>
             </div>
-            <button class="item__to-basket">В корзину</button>
+            <button class="item__to-basket" onclick="ChangeCountInCard({{product.id}})">В корзину</button>
         </div>
         <p class="item__date-delivery">Доставка ориентировочно 29 сентября - 13 октября</p>
         <hr>
@@ -38,6 +44,18 @@
 </div>
 <script>
     var s = document.getElementById("number");
+    let count_start = s.value;
+
+    function ChangeCountInCard(id) {
+        $.post( "/change-count-in-basket", {
+            canvas_data: JSON.stringify({prod_id: id, count: parseInt(s.value) - count_start})
+        }, function(err, req, resp){
+            ans = $.parseJSON(resp.responseText);
+            cart.innerText = ans.total_count;
+            if (id in ans.orders) { count_start = ans.orders[id][0]; }
+            // progress_bar(cart);
+        });
+    }
 
     function increment() {
         if (s.value < 999) {
@@ -52,15 +70,15 @@
     }
 
     s.addEventListener('input', function (e) {
-      var x = e.target.value.split(/\D/).join("");
-      if (x.length == 0) {
-        x = 0;
-      } else if (x.length > 3) {
-        x = 999;
-      } else if (x < 0) {
-        x = 0;
-      }
-      e.target.value = x;
+        var x = e.target.value.split(/\D/).join("");
+        if (x.length == 0) {
+            x = 0;
+        } else if (x.length > 3) {
+            x = 999;
+        } else if (x < 0) {
+            x = 0;
+        }
+      e.target.value = parseInt(x);
     });
 </script>
 {% endblock %}

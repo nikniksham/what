@@ -38,7 +38,11 @@
 
         <a class="personal__icon" href="/cart">
             <img src="/static/img/header/cart.svg" alt="Корзина">
-            <span id="card">0</span>
+            {% if cart %}
+            <span id="cart">{{cart.total_count}}</span>
+            {% else %}
+            <span id="cart">0</span>
+            {% endif %}
         </a>
         {% if user_is_auth %}
         <a class="personal__icon" href="/profile">

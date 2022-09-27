@@ -87,6 +87,7 @@
     </div>
 </div>
 
+{% if pages|length %}
 <div class="pagination" id="pagination">
     <p class="pagination__text">Страницы:</p>
     {% for i in range(1, pages|length + 1) %}
@@ -97,14 +98,18 @@
         {% endif %}
     {% endfor %}
 </div>
+{% endif %}
 
 <script>
+var cart = document.getElementById("cart");
+
 function ToCart(id) {
     $.post( "/change-count-in-basket", {
         canvas_data: JSON.stringify({prod_id: id, count: 1})
     }, function(err, req, resp){
-        ans = $.parseJSON(resp.responseText)
-        progress_bar(ans);
+        ans = $.parseJSON(resp.responseText);
+        cart.innerText = ans.total_count;
+        // progress_bar(cart);
     });
 }
 

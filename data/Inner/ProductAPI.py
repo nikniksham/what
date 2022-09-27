@@ -35,6 +35,17 @@ def get_product_by_category_id(category_id):
     return data
 
 
+def get_all_products(indexes):
+    session = db_session.create_session()
+    res = []
+    for ind in indexes:
+        prod = session.query(Product).get(ind)
+        if prod:
+            res.append(prod.to_dict(only=("name", "link", "max_discount", "bad_count", "bad_price", "good_count",
+                                          'good_price', "in_stoke", "image", "id", "description", "specifications")))
+    session.close()
+    return res
+
 def get_list_products(max_id=None, min_id=None):
     session = db_session.create_session()
     if max_id is None:
