@@ -1,39 +1,66 @@
 {% extends "base.html" %}
 
 {% block main %}
-    <div class="item">
-        <img class="item__image" src="{{product.image}}" alt={{product.name}}>
-        <div class="item__info">
-            <h1 class="item__name">{{product.name}}</h1>
-            <p class="item__price"><span>Оптовая цена</span><br>{{ product.good_price }} ₽</p>
-            <div class="item__flex">
-                <div class="item__count">
-                    <div class="item__count-button">-</div>
-                    <div class="item__count-number" id="number">1</div>
-                    <div class="item__count-button">+</div>
-                </div>
-                <button class="item__to-basket">В корзину</button>
+<div class="item">
+    <img class="item__image" src="{{product.image}}" alt={{product.name}}>
+    <div class="item__info">
+        <h1 class="item__name">{{product.name}}</h1>
+        <p class="item__price"><span>Оптовая цена</span><br>{{ product.good_price }} ₽</p>
+        <div class="item__flex">
+            <div class="item__count">
+                <div class="item__count-button" onclick="decrement()">-</div>
+                <input class="item__count-number" type="text" value="1" id="number" onblur="if(!/.+\s*?\—/.test(this.value)) this.value= this.value.replace(/(.+)[\s\-\—](.+)/i, '$1 — $2')">
+                <div class="item__count-button" onclick="increment()">+</div>
             </div>
-            <p class="item__date-delivery">Доставка ориентировочно 29 сентября - 13 октября</p>
-            <hr>
-            <p class="item__description">{{product.description}}</p>
-            <hr>
-<!--            <p class="item__small-name">SKU: V6 4K</p>-->
-<!--            <p class="item__category">Категории: <span>Электроника, Фото и видеокамеры, Экшн-камеры</span></p>-->
-            <ul>
-                {% for elem in product.specifications.split("@#@#@") %}
-                    <li>{{elem.split("@!@!@")[0]}} ---- {{elem.split("@!@!@")[1]}}</li>
-                {% endfor %}
-            </ul>
-            <hr>
+            <button class="item__to-basket">В корзину</button>
         </div>
-    </div>
-    <div class="description">
-        <div class="description__nav">
-            <p class="description__title">Описание</p>
-        </div>
+        <p class="item__date-delivery">Доставка ориентировочно 29 сентября - 13 октября</p>
         <hr>
-        <p class="description__subtitle">Общие характеристики</p>
-        <p class="description__text">Угол обзора 170гр. широкоформатный режим видео</p>
+        <p class="item__description">{{product.description}}</p>
+        <hr>
+        <!--            <p class="item__small-name">SKU: V6 4K</p>-->
+        <!--            <p class="item__category">Категории: <span>Электроника, Фото и видеокамеры, Экшн-камеры</span></p>-->
+        <ul>
+            {% for elem in product.specifications.split("@#@#@") %}
+            <li>{{elem.split("@!@!@")[0]}} ---- {{elem.split("@!@!@")[1]}}</li>
+            {% endfor %}
+        </ul>
+        <hr>
     </div>
+</div>
+<div class="description">
+    <div class="description__nav">
+        <p class="description__title">Описание</p>
+    </div>
+    <hr>
+    <p class="description__subtitle">Общие характеристики</p>
+    <p class="description__text">Угол обзора 170гр. широкоформатный режим видео</p>
+</div>
+<script>
+    var s = document.getElementById("number");
+
+    function increment() {
+        if (s.value < 999) {
+            s.value++;
+        }
+    }
+
+    function decrement() {
+        if (s.value > 0) {
+            s.value--;
+        }
+    }
+
+    s.addEventListener('input', function (e) {
+      var x = e.target.value.split(/\D/).join("");
+      if (x.length == 0) {
+        x = 0;
+      } else if (x.length > 3) {
+        x = 999;
+      } else if (x < 0) {
+        x = 0;
+      }
+      e.target.value = x;
+    });
+</script>
 {% endblock %}
