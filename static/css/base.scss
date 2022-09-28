@@ -355,3 +355,119 @@ button.active {
   padding: 15px 40px;
   background: #6D87E6;
 }
+
+.cart {
+  padding: 0 40px;
+  &__title {
+    text-align: center;
+    font-family: "Montserrat", sans-serif;
+    font-weight: 700;
+    font-size: 32px;
+    padding-top: 30px;
+    padding-bottom: 50px;
+  }
+  &-header {
+    margin: 0 40px;
+    display: flex;
+    background: #F1F1F1;
+    padding: 12px 0;
+    border-bottom: 2px solid #DEE2E6;
+    &__price, &__name, &__all {
+      font-family: "Montserrat", sans-serif;
+      font-weight: 700;
+      font-size: 16px;
+    }
+    &__name {
+      flex: 1 0;
+      padding-left: 20px;
+    }
+    &__price, &__all {
+      width: 150px;
+      padding-right: 20px;
+      text-align: center;
+    }
+    &__all {
+      margin-right: 60px;
+    }
+  }
+  &__aligner {
+    display: flex;
+    padding: 20px 0;
+    align-items: center;
+  }
+  &__aligner + &__aligner {
+    border-top: 1px solid #DEE2E6;
+  }
+  &__image {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+  }
+  &__name {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 500;
+    font-size: 18px;
+    flex: 1 0;
+    padding-left: 15px;
+    padding-right: 30px;
+  }
+  &__price {
+    width: 150px;
+    padding-right: 20px;
+    text-align: center;
+    font-family: "Montserrat", sans-serif;
+    font-size: 18px;
+  }
+  &__remove {
+    border: none;
+    background: transparent;
+    padding: 15px;
+    & image {
+      width: 10px;
+      height: 10px;
+    }
+  }
+}
+
+.summary {
+  width: 35%;
+  padding: 30px;
+  margin: 0 auto;
+  margin-bottom: 50px;
+  margin-top: 30px;
+  background: #F1F1F1;
+  border: 1px solid #BFBFBF;
+  &__line {
+    display: flex;
+    justify-content: space-between;
+  }
+  &__line + &__line {
+    padding-top: 15px;
+  }
+  & hr {
+    background: #CCCCCC;
+    margin: 20px 0;
+  }
+  &__text {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 300;
+    font-size: 18px;
+    color: #212529;
+  }
+  &__big, &__total {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 700;
+    font-size: 24px;
+  }
+  &__total {
+    color: #E66DCB;
+  }
+}
+
+.action {
+  width: 35%;
+  display: flex;
+  justify-content: space-between;
+  margin: 0 auto;
+  margin-bottom: 50px;
+}

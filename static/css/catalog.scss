@@ -172,6 +172,10 @@
     border-radius: 3px;
     border: solid 1px #CCC;
     align-items: center;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
     &-button {
       width: 40px;
       text-align: center;
@@ -180,6 +184,11 @@
     &-number {
       width: 40px;
       text-align: center;
+      background: transparent;
+      border: none;
+      &:focus-visible {
+        outline: none;
+      }
     }
   }
   &__to-basket {

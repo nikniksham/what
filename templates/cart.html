@@ -2,27 +2,53 @@
 
 {% block main %}
 <script type="text/javascript" src="{{url_for('static', filename='js/JQuery.min.js')}}"></script>
+<h1 class="cart__title">Ваша корзина</h1>
 
-<div class="beautiful_cart">
+<div class="cart-header">
+    <p class="cart-header__name">Товар</p>
+    <p class="cart-header__price">Цена</p>
+    <p class="cart-header__price">Количество</p>
+    <p class="cart-header__all">Всего</p>
+</div>
+<div class="cart">
     {% if cart and cart.orders|length %}
     {% for ord in cart.orders.keys() %}
-    <div class="item__info">
-        <img class="item__image" src="" id="image_{{ord}}">
-        <h1 class="item__name" id="name_{{ord}}"></h1>
-        <p class="item__price" id="price_{{ord}}"><span>Оптовая цена</span><br></p>
-        <div class="item__flex">
-            <div class="item__count">
-                <div class="item__count-button" onclick="decrement({{ord}})">-</div>
-                <input class="item__count-number" type="text" value="" id="number_{{ord}}">
-                <div class="item__count-button" onclick="increment({{ord}})">+</div>
-            </div>
-            <button class="item__to-basket" onclick="ChangeCountInCard({{ord}})">В корзину</button>
+    <div class="cart__aligner">
+        <img class="cart__image" src="" id="image_{{ord}}">
+        <p class="cart__name" id="name_{{ord}}"></p>
+        <p class="cart__price" id="price_{{ord}}"></p>
+        <div class="item__count">
+            <div class="item__count-button" onclick="decrement({{ord}})">-</div>
+            <input class="item__count-number" type="text" value="" id="number_{{ord}}">
+            <div class="item__count-button" onclick="increment({{ord}})">+</div>
         </div>
+        <p class="cart__price" id="full_price_{{ord}}">0</p>
+        <button class="cart__remove"><img src="/static/img/Cross.svg" alt="крестик"></button>
     </div>
     {% endfor %}
     {% endif %}
 </div>
 
+    <div class="summary">
+        <div class="summary__line">
+            <p class="summary__text">Товары на сумму</p>
+            <p class="summary__text">0</p>
+        </div>
+        <div class="summary__line">
+            <p class="summary__text">Доставка</p>
+            <p class="summary__text">0</p>
+        </div>
+        <hr>
+        <div class="summary__line">
+            <p class="summary__big">Всего</p>
+            <p class="summary__total">0</p>
+        </div>
+    </div>
+
+    <div class="action">
+        <button class="item__to-basket">Вернуться в магазин</button>
+        <button class="item__to-basket">Оформить заказ</button>
+    </div>
 {% if cart and cart.orders|length %}
 <script>
     var products, count_start = {}, sArr = {};
