@@ -179,6 +179,7 @@ def tmp():
 def change_count_in_basket():
     req = json.loads(request.form['canvas_data'])
     product = get_product_by_id(req["prod_id"])
+    print(req)
 
     if "error" in product:
         return redirect("/")
@@ -189,8 +190,10 @@ def change_count_in_basket():
     req["prod_id"] = str(req["prod_id"])
 
     if req["prod_id"] not in session['cart']['orders'] and req["count"] > 0:
+        # print(req["prod_id"], session['cart']['orders'])
         session['cart']['orders'][req["prod_id"]] = [min(999, req["count"]), product['good_price']]
     elif req["count"] > 0:
+        # print(req["count"], session['cart']['orders'][req["prod_id"]][0])
         session['cart']['orders'][req["prod_id"]][0] = min(999, req["count"] + session['cart']['orders'][req["prod_id"]][0])
     elif req["prod_id"] in session['cart']['orders'] and req["count"] < 0:
         if session['cart']['orders'][req["prod_id"]][0] + req["count"] > 0:
@@ -198,10 +201,12 @@ def change_count_in_basket():
         else:
             del session['cart']['orders'][req["prod_id"]]
 
+    session.modified = True
+
     keys = list(session['cart']['orders'].keys())
     session['cart']['total_count'] = sum([session['cart']['orders'][key][0] for key in keys])
     session['cart']['total_cost'] = sum([session['cart']['orders'][key][0] * session['cart']['orders'][key][1] for key in keys])
-    # print(session['cart'])
+    print(session['cart'])
     return json.dumps(session['cart'])
 
 

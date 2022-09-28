@@ -88,7 +88,7 @@
         }, function(err, req, resp){
             ans = $.parseJSON(resp.responseText);
             cart.innerText = ans.total_count;
-            if (id in ans.orders) { count_start[id] = ans.orders[id][0]; }
+            if (id in ans.orders) { count_start[id] = ans.orders[id][0]; } else {count_start[id] = 0;}
         });
     }
 </script>
