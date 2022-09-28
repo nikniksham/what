@@ -177,13 +177,10 @@ def tmp():
 
 @application.route("/change-count-in-basket", methods=["POST"])
 def change_count_in_basket():
-    if current_user.is_anonymous:
-        return redirect("/")
-
     req = json.loads(request.form['canvas_data'])
     product = get_product_by_id(req["prod_id"])
 
-    if product is dict:
+    if "error" in product:
         return redirect("/")
     #
     if not session.get('cart'):
