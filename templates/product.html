@@ -18,7 +18,7 @@
                 {% endif %}
                 <div class="item__count-button" onclick="increment()">+</div>
             </div>
-            <button class="item__to-basket" onclick="ChangeCountInCard({{product.id}})">В корзину</button>
+            <a href="/cart"><button class="item__to-basket">В корзину</button></a>
         </div>
         <p class="item__date-delivery">Доставка ориентировочно 29 сентября - 13 октября</p>
         <hr>
@@ -61,12 +61,14 @@
         if (s.value < 999) {
             s.value++;
         }
+        ChangeCountInCard({{product.id}});
     }
 
     function decrement() {
         if (s.value > 0) {
             s.value--;
         }
+        ChangeCountInCard({{product.id}});
     }
 
     s.addEventListener('input', function (e) {
@@ -79,6 +81,7 @@
             x = 0;
         }
       e.target.value = parseInt(x);
+      ChangeCountInCard({{product.id}});
     });
 </script>
 {% endblock %}

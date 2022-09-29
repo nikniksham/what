@@ -13,7 +13,7 @@
 <div class="cart">
     {% if cart and cart.orders|length %}
     {% for ord in cart.orders.keys() %}
-    <div class="cart__aligner">
+    <div class="cart__aligner" id="cart_elem_{{ord}}">
         <img class="cart__image" src="" id="image_{{ord}}">
         <p class="cart__name" id="name_{{ord}}"></p>
         <p class="cart__price" id="price_{{ord}}"></p>
@@ -22,14 +22,29 @@
             <input class="item__count-number" type="text" value="" id="number_{{ord}}">
             <div class="item__count-button" onclick="increment({{ord}})">+</div>
         </div>
-        <p class="cart__price" id="full_price_{{ord}}">0</p>
-        <button class="cart__remove"><img src="/static/img/Cross.svg" alt="крестик"></button>
+        <p class="cart__price" id="full_price_{{ord}}">{{cart["orders"][ord][0] * cart["orders"][ord][1]}}</p>
+        <button class="cart__remove" onclick="delete_elem({{ord}})"><img src="/static/img/Cross.svg" alt="крестик"></button>
     </div>
     {% endfor %}
     {% endif %}
 </div>
 
     <div class="summary">
+        {% if cart %}
+        <div class="summary__line">
+            <p class="summary__text">Товары на сумму</p>
+            <p class="summary__text" id="total_cost">{{cart.total_cost}}</p>
+        </div>
+        <div class="summary__line">
+            <p class="summary__text">Доставка</p>
+            <p class="summary__text" id="deliver">0</p>
+        </div>
+        <hr>
+        <div class="summary__line">
+            <p class="summary__big">Всего</p>
+            <p class="summary__total" id="total_cost_and_deliver">{{cart.total_cost}}</p>
+        </div>
+        {% else %}
         <div class="summary__line">
             <p class="summary__text">Товары на сумму</p>
             <p class="summary__text">0</p>
@@ -43,11 +58,12 @@
             <p class="summary__big">Всего</p>
             <p class="summary__total">0</p>
         </div>
+        {% endif %}
     </div>
 
     <div class="action">
-        <button class="item__to-basket">Вернуться в магазин</button>
-        <button class="item__to-basket">Оформить заказ</button>
+        <a href="/"><button class="item__to-basket">Вернуться в магазин</button></a>
+        <a href="/make-order"><button class="item__to-basket">Оформить заказ</button></a>
     </div>
 {% if cart and cart.orders|length %}
 <script>
@@ -82,16 +98,25 @@
         document.getElementById("number_"+prod.id).value = count_start[prod.id];
     }
 
+    function delete_elem(id) {
+        sArr[id].value = 0;
+        ChangeCountInCard(id);
+        //console.log(document.getElementById("cart_elem_"+id));
+        document.getElementById("cart_elem_"+id).remove();
+    }
+
     function increment(id) {
         if (sArr[id].value < 999) {
             sArr[id].value++;
         }
+        ChangeCountInCard(id);
     }
 
     function decrement(id) {
         if (sArr[id].value > 0) {
             sArr[id].value--;
         }
+        ChangeCountInCard(id);
     }
 
     {% for ord in cart.orders.keys() %}
@@ -105,6 +130,7 @@
                 x = 0;
             }
             e.target.value = parseInt(x);
+            ChangeCountInCard({{ord}});
         });
     {% endfor %}
 
@@ -114,7 +140,15 @@
         }, function(err, req, resp){
             ans = $.parseJSON(resp.responseText);
             cart.innerText = ans.total_count;
-            if (id in ans.orders) { count_start[id] = ans.orders[id][0]; } else {count_start[id] = 0;}
+            document.getElementById("total_cost").innerText = ans.total_cost;
+            document.getElementById("total_cost_and_deliver").innerText = ans.total_cost;
+            if (id in ans.orders) {
+                count_start[id] = ans.orders[id][0];
+                document.getElementById("full_price_"+id).innerText = ans.orders[id][0] * ans.orders[id][1];
+            } else {
+                count_start[id] = 0;
+                document.getElementById("full_price_"+id).innerText = 0;
+            }
         });
     }
 </script>
