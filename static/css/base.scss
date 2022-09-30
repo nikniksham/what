@@ -495,3 +495,40 @@ button.active {
     color: #6A6A6A;
   }
 }
+
+.profile {
+  display: flex;
+  padding: 20px;
+  &__first-column {
+    flex: 30% 0;
+    padding-right: 20px;
+  }
+  &__hello {
+    font-family: "Montserrat", sans-serif;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: bold;
+  }
+  &__navigation {
+    border: 1px solid #D1D1D1;
+    border-top: none;
+    & a {
+      text-decoration: none;
+      color: black !important;
+    }
+    &-link {
+      display: flex;
+      padding: 10px 30px;
+      border-top: 1px solid #D1D1D1;
+      & p {
+        font-family: "Montserrat", sans-serif;
+        padding: 10px 20px;
+        font-size: 14px;
+        font-weight: bold;
+      }
+    }
+  }
+  &__second-column {
+    flex: 70% 0;
+  }
+}

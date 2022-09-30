@@ -1,28 +1,48 @@
 {% extends "base.html" %}
 
-{% block stylename %}catalog{% endblock %}
-
 {% block main %}
-<script type="text/javascript" src="{{url_for('static', filename='js/JQuery.min.js')}}"></script>
-
-<div>
-    <div>
-        {% for order in orders %}
-            <img class="cart__image" src="{{order.product.image}}">
-            <p class="cart__name">{{order.product.name}}</p>
-            {% if order.status == 0 %}
-            <p class="cart__name">{{order.current}} / {{order.max}} покупателей</p>
-            {% elif order.status == 1 %}
-            <p class="cart__name">В обработке</p>
-            {% elif order.status == 2 %}
-            <p class="cart__name">В процессе доставки</p>
-            {% else %}
-            <p class="cart__name">Выполнен</p>
-            {% endif %}
-            <p class="cart__name">{{order.user_count}}</p>
-            <p class="cart__name">{{order.user_price}}</p>
-        {% endfor %}
+<div class="profile">
+    <div class="profile__first-column">
+        <p class="profile__hello">
+            Привет!<br>
+            suda_pochty@niki.sdelaet
+        </p>
+        <div class="profile__navigation">
+            <a href="/profile/tudi">
+                <div class="profile__navigation-link">
+                    <img src="/static/img/profile.svg" alt="профиль">
+                    <p>Учётная запись</p>
+                </div>
+            </a>
+            <a href="/profile/sudi">
+                <div class="profile__navigation-link">
+                    <img src="/static/img/edit.svg" alt="редактировать">
+                    <p>Обновить профиль</p>
+                </div>
+            </a>
+            <a href="/profile/obratno">
+                <div class="profile__navigation-link">
+                    <img src="/static/img/orders.svg" alt="список">
+                    <p>Заказы</p>
+                </div>
+            </a>
+            <a href="/profile/obratno">
+                <div class="profile__navigation-link">
+                    <img src="/static/img/map.svg" alt="список">
+                    <p>Адрес доставки</p>
+                </div>
+            </a>
+            <a href="/logout">
+                <div class="profile__navigation-link">
+                    <img src="/static/img/exit.svg" alt="выключатель">
+                    <p>Выход</p>
+                </div>
+            </a>
+        </div>
     </div>
-    <a href='/logout'><button class="btn submit">Выйти из аккаунта</button></a>
+    <div class="profile__second-column">
+        {% block profile %}
+        {% endblock %}
+    </div>
 </div>
 {% endblock %}
