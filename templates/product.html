@@ -26,11 +26,22 @@
         <hr>
         <!--            <p class="item__small-name">SKU: V6 4K</p>-->
         <!--            <p class="item__category">Категории: <span>Электроника, Фото и видеокамеры, Экшн-камеры</span></p>-->
-        <ul>
-            {% for elem in product.specifications.split("@#@#@") %}
-            <li>{{elem.split("@!@!@")[0]}} ---- {{elem.split("@!@!@")[1]}}</li>
-            {% endfor %}
-        </ul>
+        <div class="params-description">
+            <div class="params-description__column">
+                {% for elem in product.specifications.split("@#@#@") %}
+                    <div class="params-description__line">
+                        <p class="params-description__param">{{elem.split("@!@!@")[0]}}</p> <p class="params-description__value">{{elem.split("@!@!@")[1]}}</p>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="params-description__column">
+                {% for elem in product.specifications.split("@#@#@") %}
+                    <div class="params-description__line">
+                        <p class="params-description__param">{{elem.split("@!@!@")[0]}}</p> <p class="params-description__value">{{elem.split("@!@!@")[1]}}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
 {#        <hr>#}
     </div>
 </div>

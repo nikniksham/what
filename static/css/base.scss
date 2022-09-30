@@ -471,3 +471,27 @@ button.active {
   margin: 0 auto;
   margin-bottom: 50px;
 }
+
+.params-description {
+  display: flex;
+  padding-top: 15px;
+  &__column {
+    flex: 50% 0;
+    padding: 0 15px;
+  }
+  &__line {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 5px;
+  }
+  & p {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 300;
+    font-size: 14px;
+    line-height: 1.6;
+    flex: 50% 0;
+  }
+  &__param {
+    color: #6A6A6A;
+  }
+}
