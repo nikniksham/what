@@ -4,10 +4,15 @@
 
 {% block main %}
 <script type="text/javascript" src="{{url_for('static', filename='js/JQuery.min.js')}}"></script>
-
+<style>
+.orders_list {
+    display: flex;
+}
+</style>
 <div>
-    <div>
+    <div><br>
         {% for order in orders %}
+        <div class="orders_list">
             <img class="cart__image" src="{{order.product.image}}">
             <p class="cart__name">{{order.product.name}}</p>
             {% if order.status == 0 %}
@@ -21,8 +26,12 @@
             {% endif %}
             <p class="cart__name">{{order.user_count}}</p>
             <p class="cart__name">{{order.user_price}}</p>
+            {% if order.status == 0 %}
+            <a href="/order/edit/{{order.id}}"><button class="item__to-basket">изменить</button></a>
+            {% endif %}
+<!--            <a href="/order/{{order.id}}"><button class="item__to-basket">подробнее</button></a>-->
+        </div><br>
         {% endfor %}
     </div>
-    <a href='/logout'><button class="btn submit">Выйти из аккаунта</button></a>
 </div>
 {% endblock %}
