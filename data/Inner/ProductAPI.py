@@ -46,6 +46,7 @@ def get_all_products(indexes):
     session.close()
     return res
 
+
 def get_list_products(max_id=None, min_id=None):
     session = db_session.create_session()
     if max_id is None:

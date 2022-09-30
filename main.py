@@ -84,3 +84,8 @@ def create_product(args):
 #     ind += 1
 # session.commit()
 # session.close()
+
+
+# a = {"a": 1, "b": 2}
+# for key, val in a.items():
+#     print(key, val)

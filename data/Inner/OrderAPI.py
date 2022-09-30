@@ -2,6 +2,7 @@ from sqlalchemy import and_
 from data import db_session
 from data.Inner.main_file import raise_error, check_admin
 from data.order import Order
+from data.person import Person
 from data.product import Product
 
 
@@ -34,6 +35,17 @@ def get_list_orders(email):
     return data
 
 
+def get_list_orders_by_indexes(indexes):
+    session = db_session.create_session()
+    data = []
+    for index in indexes:
+        order = session.query(Order).get(index)
+        if order:
+            data.append(order.to_dict(only=("id", "prod_id", "current", "max", "status", 'info')))
+    session.close()
+    return data
+
+
 def get_list_orders_by_product(prod_id):
     session = db_session.create_session()
     orders = session.query(Order).filter(Order.prod_id == prod_id).all()
@@ -58,8 +70,9 @@ def get_orders_by_product_indexes(prod_indexes):
     return orders
 
 
-def order_ficha(prod_id, session, f=False):
-    product, session = find_by_id_product(prod_id, session)
+def order_ficha(prod_id, session, f=False, product=None):
+    if not product:
+        product, session = find_by_id_product(prod_id, session)
     if not product:
         if f:
             return None, session
@@ -100,13 +113,31 @@ def put_order(order_id, args):
     return {"success": f"Заказ {order_id} успешно изменён"}
 
 
-def change_info(order_id, user_id, change):
+def create_orders_by_info(info, user_id):
     session = db_session.create_session()
-    order, session = find_by_id(order_id, session)
-    if type(order) is dict:
-        return order
+    user = session.query(Person).get(user_id)
+    for key, val in info.items():
+        product, session = find_by_id_product(key, session)
+        if product:
+            while val[0]:
+                orders = session.query(Order).filter(and_(Order.prod_id == key, Order.status == 0)).all()
+                if orders:
+                    order = orders[0]
+                else:
+                    order, session = create_order_func({"info": '', "prod_id": key, "max": product.good_count, "current": 0}, session)
+                session, res = change_info(session, order, user_id, val, user)
+                if "remains" in res:
+                    val[0] = res["remains"]
+                else:
+                    val[0] = 0
+    session.commit()
+    session.close()
+    return {"success": "Всё успешно изменено"}
+
+
+def change_info(session, order, user_id, info, user):
     if order.status != 0:
-        return raise_error("заказ уже в обработке, его нельзя менять", session)[0]
+        return raise_error("заказ уже в обработке, его нельзя менять")[0]
     users, cur = {}, 0
     # print(order.info)
     for el in order.info.split("|"):
@@ -117,26 +148,43 @@ def change_info(order_id, user_id, change):
         cur += int(c)
     if user_id not in users:
         users[user_id] = 0
-    if change < 0:
-        if users[user_id] - change <= 0:
+    add_f = True
+    # print(info)
+    # print(users)
+    if info[0] < 0:
+        if users[user_id] - info[0] <= 0:
             del users[user_id]
-            res = {"success": "пользователь удалён из заказа", "id": 0}
+            res, add_f = {"success": "пользователь удалён из заказа", "id": 0}, False
         else:
-            users[user_id] -= change
+            users[user_id] -= info[0]
             res = {"success": "пользователь уменьшил кол-во заказа", "id": 1}
     else:
-        if order.current + change >= order.max:
+        if order.current + info[0] >= order.max:
             order.status = 1
             lch = order.max - order.current
             users[user_id] += lch
-            res = {"success": "заказ пошёл в обработку", "id": 2, "remains": min(change - lch, order.max)}
+            res = {"success": "заказ пошёл в обработку", "id": 2, "remains": min(info[0] - lch, order.max)}
         else:
-            users[user_id] += change
+            users[user_id] += info[0]
             res = {"success": "пользователь увеличил кол-во заказа", 'id': 3}
+    # print(users)
+    user_orders = {}
+    for el in user.orders.split("|"):
+        if el == "":
+            continue
+        ord, c = el.split(":")
+        user_orders[int(ord)] = int(c)
+    if add_f:
+        user_orders[order.id] = users[user_id]
+    elif user_id in user_orders:
+        del user_orders[order.id]
+
+    user.orders = "|".join([f"{key}:{user_orders[key]}" for key in user_orders.keys()])
+
     order.current = sum([users[key] for key in users.keys()])
     order.info = "|".join([f"{key}:{users[key]}" for key in users.keys()])
     session.commit()
-    return res
+    return session, res
 
 
 def delete_order(admin_email, admin_password, order_id):
