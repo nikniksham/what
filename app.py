@@ -128,7 +128,10 @@ def catalog():
 def profile():
     if current_user.is_anonymous:
         return redirect("/login")
-    orders = get_list_orders_by_indexes(current_user.id, [int(key.split(":")[0]) for key in current_user.orders.split("|")])
+    if ":" in current_user.orders:
+        orders = get_list_orders_by_indexes(current_user.id, [int(key.split(":")[0]) for key in current_user.orders.split("|")])
+    else:
+        orders = []
     return get_render_template('profile.html', title='Профиль', orders=orders)
 
 
