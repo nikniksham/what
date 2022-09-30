@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block stylename %}catalog{% endblock %}
+
+{% block main %}
+<script type="text/javascript" src="{{url_for('static', filename='js/JQuery.min.js')}}"></script>
+
+<div>
+    <div>
+        {% for order in orders %}
+            <img class="cart__image" src="{{order.product.image}}">
+            <p class="cart__name">{{order.product.name}}</p>
+            {% if order.status == 0 %}
+            <p class="cart__name">{{order.current}} / {{order.max}} покупателей</p>
+            {% elif order.status == 1 %}
+            <p class="cart__name">В обработке</p>
+            {% elif order.status == 2 %}
+            <p class="cart__name">В процессе доставки</p>
+            {% else %}
+            <p class="cart__name">Выполнен</p>
+            {% endif %}
+            <p class="cart__name">{{order.user_count}}</p>
+            <p class="cart__name">{{order.user_price}}</p>
+        {% endfor %}
+    </div>
+    <a href='/logout'><button class="btn submit">Выйти из аккаунта</button></a>
+</div>
+{% endblock %}

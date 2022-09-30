@@ -481,6 +481,43 @@ button.active {
   color: #6A6A6A;
 }
 
+.profile {
+  display: flex;
+  padding: 20px;
+}
+.profile__first-column {
+  flex: 30% 0;
+  padding-right: 20px;
+}
+.profile__hello {
+  font-family: "Montserrat", sans-serif;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: bold;
+}
+.profile__navigation {
+  border: 1px solid #D1D1D1;
+  border-top: none;
+}
+.profile__navigation a {
+  text-decoration: none;
+  color: black !important;
+}
+.profile__navigation-link {
+  display: flex;
+  padding: 10px 30px;
+  border-top: 1px solid #D1D1D1;
+}
+.profile__navigation-link p {
+  font-family: "Montserrat", sans-serif;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: bold;
+}
+.profile__second-column {
+  flex: 70% 0;
+}
+
 .pramams__title {
   width: 100%;
   padding: 15px 0 30px 0;
