@@ -67,6 +67,7 @@
                         <div class="progress__line" id="progress__line_{{prod.id}}"></div>
                     </div>
                 </div>
+                <p id="count_in_order_{{prod.id}}">0/{{prod.good_count}}</p>
                 <img src="/static/img/header/favourite.svg" alt="" class="firstline__icon">
                 <img src="/static/img/header/cart1.svg" alt="" class="firstline__icon" onclick="ToCart({{prod.id}})">
             </div>
@@ -115,6 +116,7 @@ function ToCart(id) {
 
 function progress_bar (ans) {
     let width;
+    document.getElementById("count_in_order_"+ans.prod_id).innerHTML = ans.current + '/' + ans.max;
     if (ans.old) {
         width = 100 * (ans.old) / ans.max;
         if (ans.current == 0 && ans.old != 0) {
@@ -131,7 +133,7 @@ function progress_bar (ans) {
             } else {
                 width = width + 1;
                 elem.style.width = width + '%';
-                elem.innerHTML = ans.current + '/' + ans.max;
+                // elem.innerHTML = ans.current + '/' + ans.max;
             }
         }
 }
