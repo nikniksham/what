@@ -28,17 +28,24 @@
         <!--            <p class="item__category">Категории: <span>Электроника, Фото и видеокамеры, Экшн-камеры</span></p>-->
         <div class="params-description">
             <div class="params-description__column">
-                {% for elem in product.specifications.split("@#@#@") %}
+                {% set product_list = product.specifications.split("@#@#@") %}
+                {% for i in range(product_list|length) %}
+                    {% if i % 2 == 0 %}
+                    {% set elem = product_list[i] %}
                     <div class="params-description__line">
                         <p class="params-description__param">{{elem.split("@!@!@")[0]}}</p> <p class="params-description__value">{{elem.split("@!@!@")[1]}}</p>
                     </div>
+                    {% endif %}
                 {% endfor %}
             </div>
             <div class="params-description__column">
-                {% for elem in product.specifications.split("@#@#@") %}
+                {% for i in range(product_list|length) %}
+                    {% if i % 2 %}
+                    {% set elem = product_list[i] %}
                     <div class="params-description__line">
                         <p class="params-description__param">{{elem.split("@!@!@")[0]}}</p> <p class="params-description__value">{{elem.split("@!@!@")[1]}}</p>
                     </div>
+                    {% endif %}
                 {% endfor %}
             </div>
         </div>
