@@ -14,6 +14,7 @@ class Person(SqlAlchemyBase, UserMixin, SerializerMixin):
     email = sqlalchemy.Column(sqlalchemy.String)
     balance = sqlalchemy.Column(sqlalchemy.Integer)
     orders = sqlalchemy.Column(sqlalchemy.String)
+    phone = sqlalchemy.Column(sqlalchemy.String)
     hashed_password = sqlalchemy.Column(sqlalchemy.String)
 
     __mapper_args__ = {

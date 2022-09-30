@@ -1,1 +1,1 @@
-from data import person, admin, category, product, order
+from data import person, admin, category, product, order, telegram

@@ -14,7 +14,7 @@ def get_self_person(email):
     person, session = check_person(email)
     if type(person) is dict:
         return person
-    data = person.to_dict(only=('id', 'fullname', 'email', "orders"))
+    data = person.to_dict(only=('id', 'fullname', 'email', "orders", "phone"))
     session.close()
     return data
 
@@ -24,7 +24,7 @@ def put_self_person(email, args):
     if type(person) is dict:
         return person
     count = 0
-    person_dict = person.to_dict(only=('fullname', 'email', 'orders'))
+    person_dict = person.to_dict(only=('fullname', 'email', 'orders', "phone"))
     keys = list(filter(lambda key: args[key] is not None and key in person_dict and args[key] != person_dict[key], list(args.keys())))
     for key in keys:
         count += 1
@@ -36,6 +36,8 @@ def put_self_person(email, args):
             person.fullname = args["fullname"]
         if key == 'orders':
             person.orders = args["orders"]
+        if key == 'phone':
+            person.orders = args["phone"]
     if "change_password" in args:
         if not person.check_password(args["check_password"]):
             return raise_error("Пароль не совпадает с текущим паролем", session)[0]
@@ -55,11 +57,13 @@ def put_self_person(email, args):
 def create_person(args):
     session = db_session.create_session()
 
-    if not all(args[key] is not None for key in ['fullname', 'email', "new_password"]):
+    if not all(args[key] is not None for key in ['fullname', 'email', "new_password", "phone"]):
         return raise_error('Пропущены некоторые аргументы, необходимые для создания аккаунта', session)[0]
 
     if session.query(Person).filter(Person.email == args['email']).first():
         return raise_error("Этот email уже занят", session)[0]
+    if session.query(Person).filter(Person.phone == args['phone']).first():
+        return raise_error("Этот phone уже занят", session)[0]
 
     res, session = check_password(args["new_password"], session)
     if type(res) is dict:
@@ -68,6 +72,7 @@ def create_person(args):
     new_person = Person()
     new_person.fullname = args["fullname"]
     new_person.email = args['email']
+    new_person.phone = args['phone']
     new_person.balance = 0
     new_person.set_password(args["new_password"])
     new_person.type = "person"
@@ -88,7 +93,7 @@ def get_person_admin(admin_email, person_id):
     person = find_by_id(person_id, session)
     if type(person) is dict:
         return person
-    data = person.to_dict(only=('id', 'fullname', 'email', 'orders'))
+    data = person.to_dict(only=('id', 'fullname', 'email', 'orders', "phone"))
     session.close()
     return data
 
@@ -123,7 +128,7 @@ def put_person_admin(admin_email, person_id, args):
         return person
 
     count = 0
-    person_dict = person.to_dict(only=('fullname', 'email', "balance", 'orders'))
+    person_dict = person.to_dict(only=('fullname', 'email', "balance", 'orders', "phone"))
     keys = list(filter(lambda key: args[key] is not None and key in person_dict and args[key] != person_dict[key], list(args.keys())))
     for key in keys:
         count += 1
@@ -137,6 +142,8 @@ def put_person_admin(admin_email, person_id, args):
             person.balance = args["balance"]
         if key == 'orders':
             person.orders = args['orders']
+        if key == 'phone':
+            person.phone = args['phone']
     if "change_password" in args:
         if not person.check_password(args["check_password"]):
             return raise_error("Пароль не совпадает с текущим паролем", session)[0]
@@ -173,6 +180,6 @@ def get_list_person_admin(admin_email):
     if type(admin) is dict:
         return admin
     persons = session.query(Person).all()
-    data = [item.to_dict(only=('id', 'fullname', 'email', 'orders')) for item in persons]
+    data = [item.to_dict(only=('id', 'fullname', 'email', 'orders', "phone")) for item in persons]
     session.close()
     return data

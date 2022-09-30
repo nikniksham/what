@@ -16,6 +16,12 @@
                 {{ error }}
             </p>
             {% endfor %}
+            {{ form.phone(class="form-control", placeholder="ваш номер телефона") }}<br>
+            {% for error in form.phone.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+            {% endfor %}
             {{ form.email(class="form-control", type="email", placeholder="Ваш Email") }}<br>
             {% for error in form.email.errors %}
             <p class="alert alert-danger" role="alert">

@@ -3,11 +3,14 @@ import os
 from flask_login import LoginManager, login_user, current_user, login_required, logout_user
 from flask import Flask, render_template, redirect, request, session
 from flask_restful import abort
+from requests import get
+
 from data import db_session
 from data.Inner.CategoryAPI import get_list_categorys, get_category_by_name
 from data.Inner.OrderAPI import get_order_by_product, get_orders_by_product_indexes, create_orders_by_info, \
     get_list_orders_by_indexes
 from data.Inner.PersonAPI import create_person, person_order_change
+from data.Inner.TelegramAPI import get_telegram_by_id
 from data.category import Category
 from data.forms import LoginForm, RegisterForm
 from data.person import Person
@@ -81,7 +84,7 @@ def register():
         res = "Пароли не совпадают"
         if form.password.data == form.password_again.data:
             res = create_person(args={"fullname": form.fullname.data, "email": form.email.data, "new_password":
-                form.password.data})
+                form.password.data, "phone": form.phone.data})
             if "success" in res:
                 return redirect("/login")
             res = res["error"]
@@ -251,12 +254,19 @@ def make_order():
         res = {"error": "cart is empty"}
     else:
         res = create_orders_by_info(session["cart"]["orders"], current_user.id)
+        send_telegram_message(res["data"])
 
     session['cart'] = {'orders': {}, 'total_count': 0, 'total_cost': 0}
 
     session.modified = True
 
     return res
+
+
+def send_telegram_message(text):
+    tbot = get_telegram_by_id(1)
+    for s in tbot['send_to'].split("|"):
+        get(f"https://api.telegram.org/bot{tbot['token']}/sendMessage?chat_id={s}&text={text}").json()
 
 
 if __name__ == '__main__':

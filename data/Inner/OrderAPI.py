@@ -129,6 +129,7 @@ def put_order(order_id, args):
 def create_orders_by_info(info, user_id):
     session = db_session.create_session()
     user = session.query(Person).get(user_id)
+    data, ind = [f"{user.fullname} {user.phone} {user.email} (id - {user.id}) сделал заказ:"], 0
     for key, val in info.items():
         product, session = find_by_id_product(key, session)
         if product:
@@ -139,13 +140,15 @@ def create_orders_by_info(info, user_id):
                 else:
                     order, session = create_order_func({"info": '', "prod_id": key, "max": product.good_count, "current": 0}, session)
                 session, res = change_info(session, order, user_id, val, user)
+                mem, ind = val[0], ind + 1
                 if "remains" in res:
                     val[0] = res["remains"]
                 else:
                     val[0] = 0
+                data.append(f'{ind}) Заявка №{order.id} на товар "{product.name}" (id - {product.id}) в количестве: {mem - val[0]} штук')
     session.commit()
     session.close()
-    return {"success": "Всё успешно изменено"}
+    return {"success": "Всё успешно изменено", "data": "\n\n".join(data)}
 
 
 def change_info(session, order, user_id, info, user):
