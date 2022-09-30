@@ -128,7 +128,8 @@ def catalog():
 def profile():
     if current_user.is_anonymous:
         return redirect("/login")
-    return get_render_template('profile.html', title='Профиль')
+    orders = get_list_orders_by_indexes(current_user.id, [int(key.split(":")[0]) for key in current_user.orders.split("|")])
+    return get_render_template('profile.html', title='Профиль', orders=orders)
 
 
 @application.route('/catalog/<string:cat>')
@@ -239,12 +240,6 @@ def load_all_orders():
 @application.route("/load-all-products", methods=["POST"])
 def load_all_products():
     res = get_all_products(json.loads(request.form['canvas_data'])["indexes"])
-    return json.dumps(res)
-
-
-@application.route("/load-all-orders-by-indexes", methods=["POST"])
-def load_all_orders_by_indexes():
-    res = get_list_orders_by_indexes([int(key.split(":")[0]) for key in json.loads(request.form['canvas_data'])["indexes"].split("|")])
     return json.dumps(res)
 
 

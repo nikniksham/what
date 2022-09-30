@@ -35,13 +35,26 @@ def get_list_orders(email):
     return data
 
 
-def get_list_orders_by_indexes(indexes):
+def get_list_orders_by_indexes(user_id, indexes):
     session = db_session.create_session()
     data = []
     for index in indexes:
         order = session.query(Order).get(index)
         if order:
-            data.append(order.to_dict(only=("id", "prod_id", "current", "max", "status", 'info')))
+            product, session = find_by_id_product(order.prod_id, session)
+            if product:
+                users = {}
+                for el in order.info.split("|"):
+                    if el == "":
+                        continue
+                    us, c = el.split(":")
+                    users[int(us)] = int(c)
+                di = order.to_dict(only=("id", "prod_id", "current", "max", "status", 'info'))
+                di["user_count"] = users[user_id]
+                di["user_price"] = users[user_id] * product.good_price
+                di["product"] = product.to_dict(only=("name", "link", "max_discount", "bad_count", "bad_price", "good_count",
+                                                      'good_price', "in_stoke", "image", "id", "description", "specifications"))
+                data.append(di)
     session.close()
     return data
 
