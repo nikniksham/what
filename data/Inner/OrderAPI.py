@@ -176,7 +176,7 @@ def change_info(session, order, user_id, info, user):
             order.status = 1
             lch = order.max - order.current
             users[user_id] += lch
-            res = {"success": "заказ пошёл в обработку", "id": 2, "remains": min(info[0] - lch, order.max)}
+            res = {"success": "заказ пошёл в обработку", "id": 2, "remains": min(info[0] - lch, order.max * 5)}
         else:
             users[user_id] += info[0]
             res = {"success": "пользователь увеличил кол-во заказа", 'id': 3}

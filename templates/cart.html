@@ -22,7 +22,7 @@
             <input class="item__count-number" type="text" value="" id="number_{{ord}}">
             <div class="item__count-button" onclick="increment({{ord}})">+</div>
         </div>
-        <p class="cart__price" id="full_price_{{ord}}">{{cart["orders"][ord][0] * cart["orders"][ord][1]}}</p>
+        <p class="cart__price" id="full_price_{{ord}}">{{(cart["orders"][ord][0] * cart["orders"][ord][1])|round(1)}}</p>
         <button class="cart__remove" onclick="delete_elem({{ord}})"><img src="/static/img/Cross.svg" alt="крестик"></button>
     </div>
     {% endfor %}
@@ -33,7 +33,7 @@
         {% if cart %}
         <div class="summary__line">
             <p class="summary__text">Товары на сумму</p>
-            <p class="summary__text" id="total_cost">{{cart.total_cost}}</p>
+            <p class="summary__text" id="total_cost">{{cart.total_cost|round(1)}}</p>
         </div>
         <div class="summary__line">
             <p class="summary__text">Доставка</p>
@@ -42,7 +42,7 @@
         <hr>
         <div class="summary__line">
             <p class="summary__big">Всего</p>
-            <p class="summary__total" id="total_cost_and_deliver">{{cart.total_cost}}</p>
+            <p class="summary__total" id="total_cost_and_deliver">{{cart.total_cost|round(1)}}</p>
         </div>
         {% else %}
         <div class="summary__line">
@@ -140,11 +140,11 @@
         }, function(err, req, resp){
             ans = $.parseJSON(resp.responseText);
             cart.innerText = ans.total_count;
-            document.getElementById("total_cost").innerText = ans.total_cost;
-            document.getElementById("total_cost_and_deliver").innerText = ans.total_cost;
+            document.getElementById("total_cost").innerText = Math.round(ans.total_cost);
+            document.getElementById("total_cost_and_deliver").innerText = Math.round(ans.total_cost);
             if (id in ans.orders) {
                 count_start[id] = ans.orders[id][0];
-                document.getElementById("full_price_"+id).innerText = ans.orders[id][0] * ans.orders[id][1];
+                document.getElementById("full_price_"+id).innerText = Math.round(ans.orders[id][0] * ans.orders[id][1]);
             } else {
                 count_start[id] = 0;
                 document.getElementById("full_price_"+id).innerText = 0;
